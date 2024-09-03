@@ -60,14 +60,17 @@
 
 
 %%HERE UP
-\section{Question 1}
+\section*{Question 1}
+\addcontentsline{toc}{section}{\protect\numberline{}Question 1}
+
 Pressurized Water Reactors (PWRs) and Boiling Water Reactors (BWRs) have many components that are identical, such as the entirety of the secondary side (turbine / electric generator  $\rightarrow$ main compressor $\rightarrow$ feed-water pump $\rightarrow$ electric heater) and the Residual Heat Removal system (RHR). Despite these similarities, the components within containment are starkly different. 
 
 PWRs' reactor vessel houses the reactor core itself, core support plates, controls rods / instrumentation, a downcomer, and multiple hot / cold legs. Notably, the control rods are above the reactor core. The downcomer forces water from the incoming cold leg down under the core into the lower plenum, and then up through the core and out through the hot leg. Outside of the reactor vessel, there is a pressurizer to maintain a set pressure within the core. Further down the hot leg, there is a steam generator, which comes in two variations depending on the manufacturer. This steam generator sends steam to the second loop, and the hot water used to generate the steam into the intermediate leg. The water in the intermediate leg is then sent through a final heat exchanger before being, once again, in the cold leg to be sent back through the reactor. The thermodynamic cycle utilized in PWRs is the Rankine cycle, where the 'boiler' is the hot water leaving the core. Depending on the steam-generator utilized, different steam qualities are achieved. For a U-Tube steam generator, the maximum steam quality is 1.0, as this generator heats water. For a once-through steam generator, much higher steam-qualities can be achieved, north of 1.0, as it heats water and the resulting steam (super-heated vapor). Finally, the fuel in PWRs is commonly Low Enriched Uranium (LEU) in the neighborhood of 3-5 \% enrichment. The assemblies in PWRs are 'open', meaning that water can flow freely between assemblies and individual rods within them; lateral flow is allowed in these reactor types. Typical assemblies are square, and have around 15x15 fuel rods. The control rods for this reactor type are inserted within and between assemblies. 
 
 In contrast, most of these components are inside of the reactor vessel of BWRs. A BWR reactor vessel is within the same loop as the secondary side mentioned previously. Within a BWR reactor vessel there is a core, controls rods / instrumentation, jet-pumps, a steam dome, driers and separators, and a recirculation line. Notably, the controls rods are underneath the reactor core in BWRs. The jet-pumps serve a similair purpose to the down-comer, but differ in that they provide uniform flow to the core without electrical power input. These jet-pumps pull water down into the lower plenum through suction. For every 10 jet-pumps there is one recirculation line / pump, that pumps water out from around the jet-pumps (water that was not successfully sent into the lower plenum) to the inlet of the jet-pumps at high velocities. These high velocities induce low pressures normal to the direction of flow, thus 'sucking' water down through the jet pumps. Further these pumps are configured in a way to maximize flow velocity. The water from the jet-pumps is sent through the lower plenum and up through the core. Importantly, in BWRs this water is 2-phase, where as in PWRs the water is designed to be singular phase. After the water has passed through the core, the steam quality is only 0.15 - 0.20, and so it passes through driers and separators to achieve a steam quality of 0.997. Finally, this steam is passed through the main steam line to go to the turbine. The thermodynamic cycle used in BWRs is again the Rankine cycle, with the boiler being the reactor core itself. The fuel of BWRs is of similair composition to PWR fuel, however the structure of the assemblies is completely different. BWR assemblies are encapsulated in a square 'can', effectively limiting lateral flow in the reactor core. This is done because large bubbles have the tendency to flow towards the center of the reactor, causing a sharp decrease in convective efficacy of the coolant in the center of the reactor. Further, unlike in PWRs, BWRs have control 'blades' which, upon insertion, occupy the spaces between assemblies. Controls rods in BWRs are not inserted within assemblies. 
 
-\section{Question 2}
+\section*{Question 2}
+\addcontentsline{toc}{section}{\protect\numberline{}Question 2}
 
 Decay heat in PWR is removed through two mechanisms. The first system to kick on is on the secondary side, the auxiliary feed-water system. The steps in this system coming online are:
 \begin{itemize}
@@ -79,7 +82,8 @@ This system comes online specifically when the reactor is first shut down.
 
 After some time has passed, where the decay heat reaches a certain threshold, the second system comes on and the first turns off. This second system is on the primary side, and is the residual heat remover system. This pumps water from the hot leg and passes through heat exchangers to remove heat, then pumping back into the cold leg. 
 
-\section{Question 3}
+\section*{Question 3}
+\addcontentsline{toc}{section}{\protect\numberline{}Question 3}
 
 The Emergency Core Cooling System (ECCS) has two main functions. The first is to cool the core during an accident scenario, ensuring the reactor does not experience a melt-down. The second is standard decay heat removal, occurring every time the reactor shuts down. 
 
@@ -87,9 +91,24 @@ There is one component of the ECCS that can operate without electrical power fro
 
 In addition to the accumulator tanks, there are multiple components within the ECCS that do not require electrical power from the grid to operate, but do rely on power from the diesel generators. Each reactor has multiple diesel generators with their only purpose being to provide power to the ECCS components. There are three separate pumps / loops available for the ECCS to utilize, depending on the conditions of the system and the flow rate requirements. The first is the high pressure injection system, which is the charging pump pumping water from the RWST. The charging pump is the pump from the chemical and volume control system (CVCS). Then, there is the intermediate pressure injection system, which performs a similar operation simply at lower pressures allowing for higher pump capacity and flow rate. Finally, there is the low pressure injection system, which is the same as the RHR system.
 
-\section{Question 4}
+\section*{Question 4}
+\addcontentsline{toc}{section}{\protect\numberline{}Question 4}
 
-\section{Question 5}
+Decay heat in BWRs is removed via the following process:
+
+\begin{itemize}
+    \item[1.] As soon as reactor is shut-down, the turbine is isolated and bypassed. The steam from the reactor vessel travels directly to the main condenser or is dumped with the pressure release valves. Feed-water line stays on.
+    \item[2.] Once low enough temperature or pressure within the vessel is achieved, the main condenser is bypassed. Now, the RHR kicks on, pumping water from the recirculation line(s) through its heat exchanger, and into the feed-water line. 
+    \item[3.] Finally, at low enough temperature the feed-water line is completely shut off and the water within the reactor vessel is sufficient to cool the core.
+    
+\end{itemize}
+
+\section*{Question 5}
+\addcontentsline{toc}{section}{\protect\numberline{}Question 5}
+
+The BWR Emergency Core Cooling System (ECCS) is comprised of multiple systems and components. There are two main systems --- high and low pressure. The high pressure system consists of the High Pressure Coolant Injection (HPCI) system and the Automatic Depressurization System (ADS). The low pressure system consists of the Low Pressure Coolant Injection (LPCI) system and the core spray system. Notably, the HPCI does not require electrical power to operate. 
+
+The HPCI can operate without power because its pumps have a turbine attached to them. After isolating the main turbine, the steam generated from the reactor core is passed through a RCIC turbine and is then dumped into the containment suppression chamber. These RCIC turbines are directly connected to the RCIC pumps, which pump water from the condensate storage tank and, once this tank is emptied, the water within the containment suppression chamber.
 
 
 \end{document}
