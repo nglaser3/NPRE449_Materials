@@ -1,0 +1,76 @@
+\documentclass{article}
+
+% Language setting
+% Replace `english' with e.g. `spanish' to change the document language
+\usepackage{biblatex} %Imports biblatex package
+\addbibresource{sample.bib}
+\usepackage[english]{babel}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{pythonhighlight}
+\newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{M}[1]{>{\centering\arraybackslash}m{#1}}
+
+% Set page size and margins
+% Replace `letterpaper' with `a4paper' for UK/EU standard size
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{setspace}
+\usepackage{booktabs}
+\usepackage[T1]{fontenc}
+\usepackage{longtable}
+\doublespacing
+
+\begin{document}
+\begin{titlepage}
+
+\centering
+\scshape
+\vspace{\baselineskip}
+
+%
+\rule{\textwidth}{1.6pt}\vspace*{-\baselineskip}\vspace*{2pt}
+\rule{\textwidth}{0.4pt}
+
+{\Huge \textbf{\textsc{NPRE 449: Homework 2 \\
+\vspace{15pt}}}}
+
+\rule{\textwidth}{0.4pt}\vspace*{-\baselineskip}\vspace{3.2pt}
+\rule{\textwidth}{1.6pt}\vspace{6pt}
+%%\centerline{\textit{University of Illinois at Urbana-Champaign}} 
+\vspace{1.5\baselineskip}
+
+
+\large \centerline{\textbf{Author:} Nathan Glaser}
+\large \centerline{\textbf{Net-ID:} nglaser3}
+\quad
+
+\vfill
+\large \centerline{September 9, 2024}
+%
+\pagenumbering{gobble}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+\pagenumbering{arabic}
+
+\section*{Question 1}
+\addcontentsline{toc}{section}{\protect\numberline{}Question 1}
+
+There are two distinct types of High Temperature Gas Reactors (HTGRs): Prismatic and Pebble-Bed. Both of these reactor types have identical second+ loop components, and most of their first loops are functionally similair. The main difference between the two reactor types lies in their reactor-core. 
+
+Both reactor types utilize TRistructural-ISOtropic (TRISO) particle fuel. TRISO fuel is a spherical pellet of uranium fuel, typically $UO_2$ or $UCO$, encapsulated by a porous carbon layer called the 'buffer', an Inner Pyrolytic-Carbon layer 'IPyC', a Silicon Carbide (SiC) layer, and an Outer Pyrolytic-Carbon layer 'OPyC'.
+
+Prismatic HTGRs superimpose these TRISO particles into a graphite matrix, forming them into hexagonal compacts. These compacts are then stacked together to form large blocks. The reactor core of prismatic HTGRs are comprised entirely of these blocks; no other structural materials are present, like steel. These blocks have some separation between them, allowing for helium flow, cooling the core blocks. 
+
+Pebble-Beds HTGRs superimpose these TRISO particles into large spherical pellets comprised of graphite. These pellets are then free to move throughout the reactor core. This is done to enable a process called 'online refueling', as the pellets actually travel (usually) down through the reactor. These pellets are then analyzed to determine how depleted they are and, if they have not reached a certain burnup, are inserted back at the top of the core. Due to the spherical nature of the pellets, there is ample flow of helium coolant through the core, however because they are not perfect spheres there are still many cases of mechanical contact, and thus sharp temperature gradients across individual pellets. 
+
+\newpage
+\section*{Question 2}
+\addcontentsline{toc}{section}{\protect\numberline{}Question 2}
+
+\end{document}
