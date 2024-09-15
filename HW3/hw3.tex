@@ -1,0 +1,86 @@
+\documentclass{article}
+
+% Language setting
+% Replace `english' with e.g. `spanish' to change the document language
+\usepackage{biblatex} %Imports biblatex package
+\addbibresource{sample.bib}
+\usepackage[english]{babel}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{pythonhighlight}
+\newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{M}[1]{>{\centering\arraybackslash}m{#1}}
+
+% Set page size and margins
+% Replace `letterpaper' with `a4paper' for UK/EU standard size
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{setspace}
+\usepackage{booktabs}
+\usepackage[T1]{fontenc}
+\usepackage{longtable}
+\doublespacing
+
+\begin{document}
+\begin{titlepage}
+
+\centering
+\scshape
+\vspace{\baselineskip}
+
+%
+\rule{\textwidth}{1.6pt}\vspace*{-\baselineskip}\vspace*{2pt}
+\rule{\textwidth}{0.4pt}
+
+{\Huge \textbf{\textsc{NPRE 449: Homework 3 \\
+\vspace{15pt}}}}
+
+\rule{\textwidth}{0.4pt}\vspace*{-\baselineskip}\vspace{3.2pt}
+\rule{\textwidth}{1.6pt}\vspace{6pt}
+%%\centerline{\textit{University of Illinois at Urbana-Champaign}} 
+\vspace{1.5\baselineskip}
+
+
+\large \centerline{\textbf{Author:} Nathan Glaser}
+\large \centerline{\textbf{Net-ID:} nglaser3}
+\quad
+
+\vfill
+\large \centerline{September 18, 2024}
+%
+\pagenumbering{gobble}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+\pagenumbering{arabic}
+
+\section*{Question 1}
+\addcontentsline{toc}{section}{\protect\numberline{}Question 1}
+
+
+\section*{Question 2}
+\addcontentsline{toc}{section}{\protect\numberline{}Question 2}
+
+\section*{Question 3}
+\addcontentsline{toc}{section}{\protect\numberline{}Question 3}
+
+Thermal design limits, pertaining to PWRs and BWRs, are operational limitations on the reactors themselves due to material limitations. In nuclear systems, these thermal design limits are the limiting factor for power output, not fuel energy density. For both PWR and BWR systems, the main thermal design limitation is due to boiling water.  In both systems, other than the water, the fuel and Zircaloy cladding have thermal limits as well. For Zircaloy the cladding cannot reach 1204 $^o$C, as at this temperature the cladding oxidizes, which is a very exothermic reaction releasing 190 kJ/mol. Further, the fuel itself has a melting temperature of 2865 $^o$C, and cannot operate higher than this temperature due to changes in fissile density.  
+
+For PWRs, the thermal design limit attributed to boiling water is called Departure from Nucleate Boiling (DNB). This occurs when water cannot physically reach the surface. This is very low-quality steam, essentially inverse of annular flow in BWRs. There is a thin steam layer directly on the surface, and immediately outside of this layer is liquid water.
+
+For BWRs, the thermal design limit from water is called Dryout. Dryout is the point in which there is no longer any water contact with the wall. At this point the coolant is high-quality steam, that is to say that the steam contact with the surface is not simply a boundary but the entirety of the coolant. 
+
+A thermal design margin is the ratio of the minimum parameter that causes the thermal design limit to the maximum of that parameter in your reactor system. Essentially, if you have a thermal design margin of 1.3, then the heat-flux required to reach the limit is 1.3 times, or 30\%, greater than the maximum heat-flux in your system. This is done to ensure that the thermal limitations of your system are not reached when under standard operations. Typical values for DNB are 1.3, and typical values for Dryout are 1.2-1.3. 
+
+\section*{Question 4}
+\addcontentsline{toc}{section}{\protect\numberline{}Question 4}
+
+\section*{Question 5}
+\addcontentsline{toc}{section}{\protect\numberline{}Question 5}
+
+
+\end{document}
