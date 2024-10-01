@@ -4,3 +4,5 @@
 *.toc
 *.xml
 *.out
+__pycache_*
+*.ipynb_checkpoin*
