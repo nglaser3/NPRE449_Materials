@@ -1,0 +1,222 @@
+\documentclass{article}
+
+% Language setting
+% Replace `english' with e.g. `spanish' to change the document language
+\usepackage{biblatex} %Imports biblatex package
+\addbibresource{sample.bib}
+\usepackage[english]{babel}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{pythonhighlight}
+\newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{M}[1]{>{\centering\arraybackslash}m{#1}}
+
+% Set page size and margins
+% Replace `letterpaper' with `a4paper' for UK/EU standard size
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{setspace}
+\usepackage{booktabs}
+\usepackage[T1]{fontenc}
+\usepackage{longtable}
+\doublespacing
+
+\begin{document}
+\newcommand{\newsec}[1]{
+\section*{Question #1}
+\addcontentsline{toc}{section}{\protect\numberline{}Question #1}
+}
+
+\newcommand{\phase}{\left(\Vec{r},t\right)}
+\newcommand{\genheat}{\nabla \cdot k\phase \nabla T \phase + q'''\phase = \rho c_p \frac{\partial T \phase}{\partial t}}
+\newcommand{\sscmheat}[1]{k_{#1} \nabla^2 T_{#1} \left(\Vec{r}\right) + q'''_{#1} = 0}
+\newcommand{\partia}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\qppo}{\mu_a \phi_{\gamma} E}
+\begin{titlepage}
+
+\centering
+\scshape
+\vspace{\baselineskip}
+
+%
+\rule{\textwidth}{1.6pt}\vspace*{-\baselineskip}\vspace*{2pt}
+\rule{\textwidth}{0.4pt}
+
+{\Huge \textbf{\textsc{NPRE 449: Homework 3 \\
+\vspace{15pt}}}}
+
+\rule{\textwidth}{0.4pt}\vspace*{-\baselineskip}\vspace{3.2pt}
+\rule{\textwidth}{1.6pt}\vspace{6pt}
+%%\centerline{\textit{University of Illinois at Urbana-Champaign}} 
+\vspace{1.5\baselineskip}
+
+
+\large \centerline{\textbf{Author:} Nathan Glaser}
+\large \centerline{\textbf{Net-ID:} nglaser3}
+\quad
+
+\vfill
+\large \centerline{September 18, 2024}
+%
+\pagenumbering{gobble}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+\pagenumbering{arabic}
+
+\newsec{1}
+
+To begin, the general heat diffusion equation is:
+\begin{equation}
+    \genheat
+\end{equation}
+
+Next, assuming constant material properties and steady state:
+\begin{equation}
+    \sscmheat{}
+\end{equation}
+
+tfuel:
+
+\begin{equation}
+    T_f(r) = \frac{-q'''r^2}{6k_f} - \frac{C_1}{r} + C_2
+\end{equation}
+
+BCS:
+
+\quad symettry:
+
+\begin{equation}
+    -k_f \frac{\partial T_f(r = 0)}{\partial r} = 0
+\end{equation}
+
+or
+\begin{equation}
+    T(r = 0) \neq \pm \infty
+\end{equation}
+
+\quad border temp:
+
+\begin{equation}
+    T_f(r = r_o) = T_{sat,water} = 668.169 ^oF
+\end{equation}
+
+Thus we get $C_1$ to be 0 by the finiteness BC, and then $C_2$ to be:
+
+\begin{equation}
+    C_2 = 668.169 + \frac{q'''r_o^2}{6 k_f} = 957.520
+\end{equation}
+
+The maximum temp is simply the center line, or $C_2$
+
+\newpage
+\newsec{2}
+To begin:
+\begin{equation}
+    \genheat
+\end{equation}
+
+Assuming steady state:
+\begin{equation}
+    \sscmheat{f}
+\end{equation}
+
+where $q'''$ is defined as:
+
+\begin{equation}
+    q''' = \qppo e^{-\mu_a x}
+\end{equation}
+
+Solving this diff-eq yields the following general solution:
+
+\begin{equation}
+    T_f(x) = -\frac{\qppo e^{-\mu_a x}}{\mu_a^2 k } + C_1x + C_2
+    \label{q2gensol}
+\end{equation}
+
+Next, our boundary conditions:
+
+\begin{equation}
+    -k \partia{T}{x = 0} = h \left( T_{\infty} - T_s\right) 
+\end{equation}
+
+And 
+\begin{equation}
+    -k \partia{T}{x = t} = h \left(T_s - T_{\infty}\right)
+\end{equation}
+
+subsituting in \eqref{q2gensol} to these BCs yields, and rearranging:
+
+\begin{equation}
+    \frac{k}{h} \cdot C_1 - C_2 = -\frac{\qppo}{\mu_a h} - \frac{\qppo}{\mu_a^2 k} - T_{\infty}
+\end{equation}
+
+\begin{equation}
+    \left( h t + k \right) \cdot C_1+ h \cdot C_2 = \frac{\qppo e^{-\mu_a t}}{\mu_a} \left( \frac{h}{\mu_a k} - 1\right) + h T_{\infty}
+\end{equation}
+
+Forming into matrices and solving:
+
+\begin{equation}
+    \begin{bmatrix}
+    \frac{k}{h} & -1 \\
+    h t + k & h
+    \end{bmatrix} 
+    \begin{bmatrix}
+        C_1 \\
+        C_2
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        -\qppo\left(\frac{1}{\mu_a h} - \frac{1}{\mu_a^2 k}\right) - T_{\infty} \\
+        \frac{\qppo e^{-\mu_a t}}{\mu_a} \left( \frac{h}{\mu_a k} - 1\right) + h T_{\infty}
+    \end{bmatrix}
+\end{equation}
+
+\begin{equation}
+    \begin{bmatrix}
+        C_1 \\ C_2
+    \end{bmatrix}
+     = 
+     \begin{bmatrix}
+         -2599.532 \quad \frac{^oF}{ft}\\ 1695.497  \quad ^oF
+     \end{bmatrix}
+\end{equation}
+
+
+\subsection{Part A}
+Now, to find the surface temperatures we simply plug in $C_1$, $C_2$, and the x-location of the surfaces into \eqref{q2gensol}. 
+
+\[
+\boxed{T_f(x = 0) = 481.156} \]\[
+\boxed{T_f(x = t) = 366.720}
+\]
+
+\subsection{Part B}
+Next to find the maximum temperature, we simply differentiate the temperature distribution, set it equal to 0, solve for x, and then plug this x back into the temperature distribution. 
+\begin{align}    
+    0 = \partia{T}{x} = \frac{\qppo e^{-\mu_a x}}{\mu_ak}+C_1 \\
+    \frac{-C_1 \mu_a k}{\qppo} = e^{-\mu_a x} \\
+    \frac{ln\left(\frac{-C_1 \mu_a k}{\qppo}\right)}{\mu_a} = x \\
+    x = 0.167
+\end{align}
+
+\[
+\boxed{T_f(x = 0.167) = 912.506 ^oF}
+\]
+
+\newpage
+\newsec{3}
+\begin{equation}
+    \genheat
+\end{equation}
+
+\newsec{4}
+
+\newsec{5}
+
+\end{document}
