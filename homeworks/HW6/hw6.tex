@@ -81,30 +81,26 @@ Next, assuming constant material properties and steady state:
     \sscmheat{}
 \end{equation}
 
-tfuel:
-
+Next, to solve:
 \begin{equation}
-    T_f(r) = \frac{-q'''r^2}{6k_f} - \frac{C_1}{r} + C_2
+    \begin{gathered}
+        \nabla^2T(r) = -\frac{q'''}{k}\\
+        \frac{1}{r^2}\partia{}{r}r\partia{T}{r} = -\frac{q'''}{k}\\
+        r^2\partia{T}{r} = -\frac{q'''r^3}{3k} + C_1\\
+        T = -\frac{q'''r^2}{6k} + \frac{C_1}{r} + C_2
+    \end{gathered}
 \end{equation}
 
-BCS:
 
-\quad symettry:
-
-\begin{equation}
-    -k_f \frac{\partial T_f(r = 0)}{\partial r} = 0
-\end{equation}
-
-or
-\begin{equation}
-    T(r = 0) \neq \pm \infty
-\end{equation}
-
-\quad border temp:
+Next for our boundary conditions, we have symmetry or finiteness at the center line, and a temperature condition at the surface:
 
 \begin{equation}
+\begin{gathered}
+    -k_f \frac{\partial T_f(r = 0)}{\partial r} = 0 \quad or \quad T(r = 0) \neq \pm \infty \\
     T_f(r = r_o) = T_{sat,water} = 668.169 ^oF
+\end{gathered}
 \end{equation}
+
 
 Thus we get $C_1$ to be 0 by the finiteness BC, and then $C_2$ to be:
 
@@ -112,7 +108,21 @@ Thus we get $C_1$ to be 0 by the finiteness BC, and then $C_2$ to be:
     C_2 = 668.169 + \frac{q'''r_o^2}{6 k_f} = 957.520
 \end{equation}
 
-The maximum temp is simply the center line, or $C_2$
+The maximum temp is simply the center line, or $C_2$. This can be derived by differentiating the temperature distribution with respect to r, setting this equal to 0, and solving for r; however we can trivially look at the distribution's equation and see it is a second degree non-shifted polynomial, and thus the maximum is located at $r=0$.
+
+\[
+\boxed{T_{max} = 957.520 \ ^oF}
+\]
+
+
+
+
+
+
+
+
+
+
 
 \newpage
 \newsec{2}
@@ -139,18 +149,17 @@ Solving this diff-eq yields the following general solution:
     \label{q2gensol}
 \end{equation}
 
-Next, our boundary conditions:
+Next, our boundary conditions. We have two boundary conditions, one at the left surface and one for the right surface. These two are functionally similar, however the $\Delta T$ is flipped:
 
 \begin{equation}
-    -k \partia{T(x = 0)}{x} = h \left( T_{\infty} - T_s\right) 
-\end{equation}
-
-And 
-\begin{equation}
+\begin{gathered}
+    -k \partia{T(x = 0)}{x} = h \left( T_{\infty} - T_s\right)\\ 
     -k \partia{T(x=t)}{x} = h \left(T_s - T_{\infty}\right)
+\end{gathered}
 \end{equation}
+Where $x=0$ is the left surface and $x=t$ is the right surface.
 
-subsituting in \eqref{q2gensol} to these BCs yields, and rearranging:
+Substituting in \eqref{q2gensol} to these BCs yields (and rearranging):
 
 \begin{equation}
     \frac{k}{h} \cdot C_1 - C_2 = -\frac{\qppo}{\mu_a h} - \frac{\qppo}{\mu_a^2 k} - T_{\infty}
@@ -160,7 +169,7 @@ subsituting in \eqref{q2gensol} to these BCs yields, and rearranging:
     \left( h t + k \right) \cdot C_1+ h \cdot C_2 = \frac{\qppo e^{-\mu_a t}}{\mu_a} \left( \frac{h}{\mu_a k} - 1\right) + h T_{\infty}
 \end{equation}
 
-Forming into matrices and solving:
+Forming into matrices and solving (via \texttt{scipy.linalg.solve}):
 
 \begin{equation}
     \begin{bmatrix}
@@ -189,7 +198,7 @@ Forming into matrices and solving:
 \end{equation}
 
 
-\subsection{Part A}
+\subsection*{Part A}
 Now, to find the surface temperatures we simply plug in $C_1$, $C_2$, and the x-location of the surfaces into \eqref{q2gensol}. 
 
 \[
@@ -197,24 +206,38 @@ Now, to find the surface temperatures we simply plug in $C_1$, $C_2$, and the x-
 \boxed{T_f(x = t) = 366.720}
 \]
 
-\subsection{Part B}
+\subsection*{Part B}
 Next to find the maximum temperature, we simply differentiate the temperature distribution, set it equal to 0, solve for x, and then plug this x back into the temperature distribution. 
-\begin{align}    
-    0 = \partia{T}{x} = \frac{\qppo e^{-\mu_a x}}{\mu_ak}+C_1 \\
+\begin{equation}
+    \begin{gathered}
+        0 = \partia{T}{x} = \frac{\qppo e^{-\mu_a x}}{\mu_ak}+C_1 \\
     \frac{-C_1 \mu_a k}{\qppo} = e^{-\mu_a x} \\
     \frac{ln\left(\frac{-C_1 \mu_a k}{\qppo}\right)}{\mu_a} = x \\
-    x = 0.167
-\end{align}
+    x = 0.167 \ ft
+    \end{gathered}
+\end{equation}    
 
 \[
-\boxed{T_f(x = 0.167) = 912.506 ^oF}
+\boxed{T_f(x = 0.167) = 912.506 \ ^oF}
 \]
+
+
+
+
+
+
+
+
+
+
 
 \newpage
 \newsec{3}
 \begin{equation}
     \genheat
 \end{equation}
+
+
 
 
 
