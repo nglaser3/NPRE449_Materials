@@ -4,9 +4,12 @@
 % Replace `english' with e.g. `spanish' to change the document language
 \usepackage{biblatex} %Imports biblatex package
 \addbibresource{sample.bib}
+\usepackage{changepage}
 \usepackage[english]{babel}
+\usepackage{tikz}
 \usepackage{array}
 \usepackage{amsmath}
+\usepackage{empheq}
 \usepackage{pythonhighlight}
 \newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
 \newcolumntype{M}[1]{>{\centering\arraybackslash}m{#1}}
@@ -29,7 +32,8 @@
 \section*{Question #1}
 \addcontentsline{toc}{section}{\protect\numberline{}Question #1}
 }
-
+\newcommand{\circled}[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
 \newcommand{\phase}{\left(\Vec{r},t\right)}
 \newcommand{\genheat}{\nabla \cdot k\phase \nabla T \phase + q'''\phase = \rho c_p \frac{\partial T \phase}{\partial t}}
 \newcommand{\energybalance}{\Dot{E}_{in} - \Dot{E}_{out} + \Dot{E}_{gen} = \Dot{E}_{stored}}
@@ -233,17 +237,122 @@ Next to find the maximum temperature, we simply differentiate the temperature di
 
 \newpage
 \newsec{3}
+To begin, the general heat diffusion equation:
 \begin{equation}
     \genheat
 \end{equation}
 
+Again this is steady state, and because it is a multi-region problem we can separate into two independent equations. Subscript $f$ for the fuel, and $c$ for the clad: 
+\begin{equation}
+    \begin{gathered}
+        \sscmheat{f}\\
+        \nabla^2 T_c(\Vec{r}) = 0
+    \end{gathered}
+\end{equation}
+Solving these two ODEs is trivial but for completeness will still be done. For the fuel:
+\begin{equation}
+    \begin{gathered}
+        \sscmheat{f}\\
+        \frac{1}{r}\partia{}{r}r\partia{T_f}{r} = \frac{-q'''}{k_f}\\
+        r\partia{T_f}{r} = \frac{-q'''r^2}{2k_f} + C_1 \\
+        T_f(r) = \frac{-q'''r^2}{4k_f} + C_1 \ ln(r) + C_2
+    \end{gathered}
+\end{equation}
+
+And then for the clad:
+
+\begin{equation}
+    \begin{gathered}
+        \nabla^2 T_c(\Vec{r}) = 0 \\
+        \frac{1}{r}\partia{}{r}r\partia{T_c}{r} = 0\\
+        r\partia{T_c}{r} = C_3 \\
+        T_c(r) = C_3 \ ln(r) + C_4
+    \end{gathered}
+\end{equation}
 
 
+Next, we have four boundary conditions:\newline
 
+\begin{adjustwidth}{130pt}{0pt}
+    \begin{itemize}
+        \item[\circled{\textbf{1}}] $\displaystyle-k_f\nabla T_f(0) = 0$ or finiteness at $T_f(0)$
+        \item[\circled{\textbf{2}}] $\displaystyle -A_{s,f}k_f \nabla T_f(r_{f,s}) = -A_{s,ci}k_c \nabla T_c(r_{c,is})$
+        \item[\circled{\textbf{3}}] $\displaystyle -k_f \nabla T_f(r_{f,s}) = h_{gc} \left[\ T_f(r_{f,s}) - T_c(r_{c,is})\ \right]$
+        \item[\circled{\textbf{4}}] $\displaystyle T_c(r_{c,os}) = 295 \ ^oC$
+    \end{itemize}
+\end{adjustwidth}
 
+where $r_{c,is}$ is the inner surface radius of the clad region, $r_{c,os}$ is the clad outer surface, $r_{f,s}$ is the fuel surface, $A_{s,f}$ is the surface area of the fuel region, $A_{s,ci}$ is the interior surface area of the clad region.
 
+\newpage
+With these BCs we can solve for our temperature distributions. To begin, utilizing \circled{1} we can trivially see that $C_1$ must be 0, as $ln(r)$ is undefined at 0. 
 
+Next, investigating \circled{2}:
 
+\begin{equation}
+    \begin{gathered}
+        -A_{s,f}k_f \partia{}{r}\left(\frac{-q'''r^2}{4k_f} + C_2\right) = 
+        -A_{s,ci}k_c \partia{}{r}\left(C_3 \ ln(r) + C_4\right) \\
+        -k_f (2\pi r_{f,s}h)\left(\frac{-q'''r}{2k_f} \right) = (2\pi r_{c,is}h)\frac{-k_c C_3}{r}\\
+        C_3 = \frac{-q'''r_{f,s}r_{c,is}}{2k_c} * \frac{r_{f,s}}{r_{c,is}}
+        C_3 = -411.930
+    \end{gathered}
+\end{equation}
+
+Then, \circled{4}:
+
+\begin{equation}
+    \begin{gathered}
+        T_c(r_{c,os}) = 295 \ ^oC \\
+        C_3 \ ln(r_{c,os}) + C_4 = 295 \ ^oC\\
+        C_4 = 295 - C_3 \ ln(r_{c,os}) \\
+        C_4 = -1794.960
+    \end{gathered}
+\end{equation}
+
+Finally, with knowledge of $C_3$, we can investigate \circled{3}:
+
+\begin{equation}
+    \begin{gathered}
+        -k_f \nabla T_f(r_{f,s}) = h_{gc} \left[\ T_f(r_{f,s}) - T_c(r_{c,is})\ \right]\\
+        k_f \partia{}{r}\left(\frac{-q'''r^2}{4k_f} + C_2\right) = 
+        h_{gc} \left[\frac{-q'''(r_{f,s})^2}{4k_f} + C_2 - C_3 \ ln(r_{c,is}) - C_4 \right] \\
+        C_2 = \frac{-q'''r_{f,s}}{2h_{gc}} + C_4 + C_3\ ln(r_{c,is}) + \frac{q'''(r_{f,s})^2}{4k_f}\\
+        C_2 = 2111.802
+    \end{gathered}
+\end{equation}
+
+Finally, we have our solutions to the temperature distribution in each region. From here, we can determine the center line temperature, the fuel surface temperature, and the clad inner-surface temperature.
+
+\newcommand*\widefbox[1]{\fbox{\hspace{2em}#1\hspace{2em}}}
+
+\begin{subequations}
+\begin{empheq}[box=\widefbox]{align}
+  T_{cl} &  = 2111.801 \notag\\
+  T_{f,s} & = 664.024 \notag\\
+  T_{c,is} & = 355.876 \notag
+\end{empheq}
+\end{subequations}
+
+\newpage
+Next, to find the volume weighted average temperature, we integrate the pellet temperature distribution by the volume:
+
+\begin{equation}
+    \begin{gathered}
+        \frac{1}{V}\int_V T_f(\Vec{r}) dV = \Bar{T}_f \\
+        \frac{1}{\pi r_{f,s}^2 h} \: \left[\int_0^{r_{f,s}}\int_{-\pi}^{\pi}\int_{0}^{h} r \cdot \left(\frac{-q'''r^2}{4k_f}  + C_2\right)  dh \ d\theta \ dr\right] =\Bar{T}_f \\
+        \frac{1}{r_{f,s}^2} \int_0^{r_{f,s}} \left(\frac{-q'''r^3}{4k_f}  + C_2\ r\right) dr = \Bar{T}_f \\
+        \frac{1}{r_{f,s}^2} \left[\frac{-q'''r^4}{16k_f} +\frac{C_2r^2}{2}\right]\biggr\rvert_0^{r_{f,s}} = \Bar{T}_f \\
+        \frac{1}{r_{f,s}^2} \left[ \frac{-q'''r_{f,s}^4}{16k_f} +\frac{C_2r_{f,s}^2}{2}\right] = \Bar{T}_f\\
+        \Bar{T}_f = \frac{C_2}{2} - \frac{q'''r_{f,s}^2}{16k_f}\\
+    \end{gathered}    
+\end{equation}
+
+And thus:
+
+\[
+\boxed{\Bar{T}_f = 1387.913}
+\]
 
 
 
