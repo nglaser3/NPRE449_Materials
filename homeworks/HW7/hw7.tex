@@ -1,0 +1,231 @@
+\documentclass{article}
+% Language setting
+% Replace `english' with e.g. `spanish' to change the document language
+\usepackage{biblatex} %Imports biblatex package
+\addbibresource{sample.bib}
+\usepackage{changepage}
+\usepackage[english]{babel}
+\usepackage{tikz}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{accents}
+\usepackage{empheq}
+\usepackage{pythonhighlight}
+\newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{M}[1]{>{\centering\arraybackslash}m{#1}}
+
+% Set page size and margins
+% Replace `letterpaper' with `a4paper' for UK/EU standard size
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+\usepackage{graphicx}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{setspace}
+\usepackage{booktabs}
+\usepackage[T1]{fontenc}
+\usepackage{longtable}
+\doublespacing
+
+\begin{document}
+\begin{titlepage}
+
+\centering
+\scshape
+\vspace{\baselineskip}
+
+%
+\rule{\textwidth}{1.6pt}\vspace*{-\baselineskip}\vspace*{2pt}
+\rule{\textwidth}{0.4pt}
+
+{\Huge \textbf{\textsc{NPRE 449: Homework 3 \\
+\vspace{15pt}}}}
+
+\rule{\textwidth}{0.4pt}\vspace*{-\baselineskip}\vspace{3.2pt}
+\rule{\textwidth}{1.6pt}\vspace{6pt}
+%%\centerline{\textit{University of Illinois at Urbana-Champaign}} 
+\vspace{1.5\baselineskip}
+
+
+\large \centerline{\textbf{Author:} Nathan Glaser}
+\large \centerline{\textbf{Net-ID:} nglaser3}
+\quad
+
+\vfill
+\large \centerline{September 18, 2024}
+%
+\pagenumbering{gobble}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+\pagenumbering{arabic}
+
+\newcommand{\leftrightharpoonup}{\mathrel{\mathpalette\lrhup\relax}}
+\newcommand{\lrhup}[2]{\ooalign{$#1\leftharpoonup$\cr$#1\rightharpoonup$\cr}}
+\newcommand{\pd}[3]{\frac{\partial^{#3}#1}{\partial#2^{#3}}}
+\newcommand{\phase}{\left(\Vec{r},t\right)}
+\newcommand*\vect[1]{\mkern2mu\accentset{\rightharpoonup}{#1}\mkern2mu}
+\newcommand*\tensor[1]{\mkern2mu\accentset{\leftrightharpoonup}{#1}\mkern2mu}
+\renewcommand{\Vec}[1]{\vect{#1}}
+\newcommand{\stress}{\tensor{\mathbf{\tau}}}
+
+\newcommand{\mass}{\pd{\rho}{t}{} + \nabla\cdot\rho\Vec{v} = 0}
+\newcommand{\momentum}{\pd{\rho\Vec{v}}{t}{} + \nabla \cdot \rho\Vec{v}\Vec{v}=-\nabla P + \nabla \cdot \stress+\rho \Vec{g}}
+\newcommand{\energy}{\pd{\rho u}{t}{} + \nabla\cdot\rho\Vec{v}u 
+        =
+        -\nabla\cdot q'' - P\nabla\cdot\Vec{v} + \stress\mathbf{:}\nabla\Vec{v}+q'''}
+        
+\section*{Question 1}
+\addcontentsline{toc}{section}{\protect\numberline{}Question 1}
+To begin, the Navier-Stokes equations are:
+
+\begin{subequations}
+    \begin{equation}
+        \mass
+        \label{mass}
+    \end{equation}
+    \begin{equation}
+        \momentum
+        \label{momentum}
+    \end{equation}
+    \begin{equation}
+        \energy
+        \label{energy}
+    \end{equation}
+\end{subequations}
+
+
+First, we expand the mass equation into Cartesian coordinates. This is rather rudimentary as the mass equation is a scalar equation, and there is only the divergence of a vector to be done:
+\begin{equation}
+    \begin{gathered}
+        \mass \\
+        \pd{\rho}{t}{} + \left[\pd{\rho v_x}{x}{} + \pd{\rho v_y}{y}{} + \pd{\rho v_z}{z}{}\right] = 0\\
+    \end{gathered}
+\end{equation}
+
+And so, for the mass equation:
+\begin{equation}
+    \boxed{\pd{\rho}{t}{} + \left[\pd{\rho v_x}{x}{} + \pd{\rho v_y}{y}{} + \pd{\rho v_z}{z}{}\right] = 0}
+    \label{cartmass}
+\end{equation}
+
+Next, the momentum equation. To do this we will break into x, y, and z equations, as the momentum equation is a vector equation. The equations x, y, and z will all have the same form just with different subscripts. The expansion will be done with x. So as to not have a multi-line equation, each term will be defined for specifically x. To do this various steps are undertaken. Firstly, the divergence of $\Vec{v}\Vec{v}$ can be seen as, in the x direction, $\nabla (v_x\Vec{v})$. Next, the pressure is simply just the derivative of pressure in the x direction. Then, the divergence of the stress tensor is functionally similair to the divergence of the vector-vector multiplication, $\nabla \stress_x$. Finally, the gravity form is simply the x-component of g.
+
+\newcommand{\mompvv}[1]{\pd{\rho v_{#1}^2}{x}{} + \pd{\rho v_{#1} v_y}{y}{} + \pd{\rho v_{#1} v_z}{z}{}}
+\newcommand{\momP}[1]{\pd{P_{#1}}{#1}{}}
+\newcommand{\momds}[1]{\pd{\stress_{#1 x}}{x}{} + \pd{\stress_{#1 y}}{y}{} + \pd{\stress_{#1 z}}{z}{}}
+\newcommand{\momg}[1]{\rho g_{#1}}
+\newcommand{\mom}[1]{
+\pd{\rho v_{#1}}{}{} + \left[\mompvv{x}\right] = -\momP{x} + \left[\momds{x}\right] +\momg{x}
+}
+\begin{equation}
+\begin{gathered}
+    \nabla \cdot \rho\Vec{v}\Vec{v} = \mompvv{x} \\ 
+    \nabla P = \momP{x}\\
+    \nabla \cdot \stress = \momds{x}\\
+    \rho \Vec{g} = \momg{x}
+\end{gathered}
+\end{equation}
+
+\newpage
+Substituting these into our seperated momentum equations, we get the momentum equation expanded into x, y, and z:
+\begin{subequations}
+    \begin{equation}
+        \boxed{\mom{x}}
+    \end{equation}
+    \begin{equation}
+        \boxed{\mom{y}}
+    \end{equation}
+    \begin{equation}
+        \boxed{\mom{z}}
+    \end{equation}
+\end{subequations}
+
+Finally, for the energy equation. This is fortunately a scalar equation, and is thus not needed to be separated into different equations. First, $\nabla\cdot \rho\Vec{v}u$ is simply the divergence of a vector, in which each component is multiplied by $\rho$ and $u$. Next, $\nabla \cdot q''$ is again just the divergence of the $q''$ vector. Further, $P\nabla\cdot\Vec{v}$ is again just the divergence of a vector multiplied by the pressure.
+
+\newcommand{\enpvu}{\pd{\rho v_x u}{x}{} + \pd{\rho v_y u}{y}{} + \pd{\rho v_z u}{z}{}}
+\newcommand{\enqpp}{\pd{q_{x}''}{x}{} + \pd{q_y''}{y}{} + \pd{q_z''}{z}{}}
+\newcommand{\enpdv}{P\left[\pd{v_x}{x}{} + \pd{v_y}{y}{} + \pd{v_z}{z}{}\right]}
+
+\begin{equation}
+    \begin{gathered}
+        \nabla\cdot \rho\Vec{v}u = \enpvu\\
+        \nabla \cdot q'' = \enqpp\\
+        P\nabla\cdot\Vec{v} = \enpdv
+    \end{gathered}
+\end{equation}
+
+Then to explain the $\stress:\nabla\Vec{v}$. First, the $\nabla\Vec{v}$. This is actually written as $\nabla^T\Vec{v}$:
+
+\begin{equation}
+    \nabla^T\Vec{v} = 
+    \begin{bmatrix}
+        \pd{}{x}{}\\
+        \pd{}{y}{}\\
+        \pd{}{z}{}
+    \end{bmatrix}
+    \left[v_x \:\: v_y \:\: v_z \right] = 
+    \begin{bmatrix}
+        \pd{v_x}{x}{} \:\:\pd{v_x}{y}{} \:\:\pd{v_x}{z}{} \\
+        \pd{v_y}{x}{} \:\:\pd{v_y}{y}{} \:\:\pd{v_y}{z}{} \\
+        \pd{v_z}{x}{} \:\:\pd{v_z}{y}{} \:\:\pd{v_z}{z}{}
+    \end{bmatrix}
+\end{equation}
+
+Thus the double dot product has the true form of:
+
+\begin{equation}
+    \stress:\nabla\Vec{v}=
+    \begin{bmatrix}
+        \tau_{ii} \:\: \tau_{ij} \:\: \tau_{ik} \\
+        \tau_{ji} \:\: \tau_{jj} \:\: \tau_{kk} \\
+        \tau_{ki} \:\: \tau_{kj} \:\: \tau_{kk}
+    \end{bmatrix}
+    :
+    \begin{bmatrix}
+        \pd{v_x}{x}{} \:\:\pd{v_x}{y}{} \:\:\pd{v_x}{z}{} \\
+        \pd{v_y}{x}{} \:\:\pd{v_y}{y}{} \:\:\pd{v_y}{z}{} \\
+        \pd{v_z}{x}{} \:\:\pd{v_z}{y}{} \:\:\pd{v_z}{z}{}
+    \end{bmatrix}
+\end{equation}
+
+Next, the double dot product of two tensors is very similair to a vector dot product. Each component in the tensor will be multiplied by its corresponding component in the other tensor, then all of the products will be summed.
+\begin{multline}
+    \stress:\nabla\Vec{v}= 
+    \tau_{ii}\pd{v_x}{x}{} + \tau_{ij}\pd{v_x}{y}{} + \tau_{ik}\pd{v_x}{z}{} + 
+    \tau_{ji}\pd{v_y}{x}{} + \tau_{jj}\pd{v_y}{y}{} + \tau_{jk}\pd{v_y}{z}{} +
+    \tau_{ki}\pd{v_z}{x}{} + \tau_{kj}\pd{v_z}{y}{} + \tau_{kk}\pd{v_z}{z}{}
+\end{multline}
+
+Or, in shorter notation (where i, j, k are x, y, z):
+
+\newcommand{\energydoubledot}{\sum_{n}^{i,j,k}\:\sum_{m}^{i,j,k} \tau_{nm}\pd{v_n}{m}{}}
+\begin{equation}
+    \stress:\nabla\Vec{v} = \sum_{n}^{i,j,k}\:\sum_{m}^{i,j,k} \tau_{nm}\pd{v_n}{m}{}
+\end{equation}
+
+Finally, we can plug these all back into our energy equation, yielding the energy equation expanded into Cartesian. Both the short-hand and long form are presented. Short form:
+\begin{multline}
+    \pd{\rho u}{t}{} + \left[\enpvu\right] = -\left[\enqpp\right]\\ -\enpdv + \energydoubledot + q'''
+\end{multline}
+
+Long form:
+\begin{empheq}[box=\fbox]{multline}
+    \pd{\rho u}{t}{} + \left[\enpvu\right] = -\left[\enqpp\right]\\
+    -\enpdv + q''' + 
+    \biggl[\tau_{ii}\pd{v_x}{x}{} + \tau_{ij}\pd{v_x}{y}{} + \tau_{ik}\pd{v_x}{z}{}  \\ 
+    +\tau_{ji}\pd{v_y}{x}{} + \tau_{jj}\pd{v_y}{y}{} + \tau_{jk}\pd{v_y}{z}{} +
+    \tau_{ki}\pd{v_z}{x}{} + \tau_{kj}\pd{v_z}{y}{} + \tau_{kk}\pd{v_z}{z}{}\biggr]
+\end{empheq}
+
+
+\newpage
+\section*{Question 2}
+\addcontentsline{toc}{section}{\protect\numberline{}Question 2}
+
+
+\newpage
+\section*{Question 3}
+\addcontentsline{toc}{section}{\protect\numberline{}Question 2}
+
+\end{document}
