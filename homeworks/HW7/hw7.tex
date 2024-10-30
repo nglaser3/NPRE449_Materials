@@ -327,12 +327,49 @@ And then again for simplicity, I define $\lhcrud$ as equal to $\xi$:
     T(r,z) = \xi \left[\frac{r^2}{4}-\frac{r^4}{16R^2}\right] + C_1 \ln(r) + C_2
 \end{equation}
 
+\newpage
 Now for our boundary conditions:
 
 \begin{itemize}
     \item[\circled{1}] Symmetry: $\pd{T(0)}{r}{}$, or Finiteness at the center line
-    \item[\circled{2}]  $q''=h(T_s - T_{cl})$, or $T(R) = \frac{q''}{h}+ T(0)$
+    \item[\circled{2}]  $T(R,z) = T_s(z)$
 \end{itemize}
+
+Investigating \circled{1}, $C_1$ must be 0. Then from \circled{2}:
+\begin{subequations}
+    \begin{equation}
+        T(R,z) = \xi \left[\frac{R^2}{4}-\frac{R^2}{16}\right] + C_2
+    \end{equation}
+    \begin{equation}
+        T_s(z) - \xi \left[\frac{3R^2}{16}\right] = C_2
+    \end{equation}
+\end{subequations}
+
+Thus, our temperature distribution is:
+\begin{equation}
+    T(r,z) = \xi \left[\frac{r^2}{4}-\frac{r^4}{16R^2}\right] + T_s(z) - \xi\frac{3R^2}{16}
+\end{equation}
+
+Then to find the normalized temperature, $\frac{T_s(z) - T(r,z)}{T_s(z) - T_{cl}(z)}$:
+\begin{subequations}
+    \begin{equation}
+        T_s(z) - T(r,z) = \xi\left[ \frac{r^4}{16R^2} - \frac{r^2}{4} + \frac{3R^2}{16} \right]
+    \end{equation}
+    \begin{equation}
+        T_s(z) - T_{cl}(z) = \xi [\frac{3R^2}{16}]
+    \end{equation}
+\end{subequations}
+
+Thus:
+\begin{subequations}
+
+    \begin{equation}
+        \frac{T_s(z) - T(r,z)}{T_s(z) - T_{cl}(z)} = \frac{\frac{r^4}{16R^2} - \frac{r^2}{4} + \frac{3R^2}{16}}{\frac{3R^2}{16}}
+    \end{equation}
+    \begin{equation}
+        \frac{T_s(z) - T(r,z)}{T_s(z) - T_{cl}(z)} = \frac{r^4}{3R^4} - \frac{4r^2}{3R^2} + 1 
+    \end{equation}
+\end{subequations}
 \section*{Question 3}
 \addcontentsline{toc}{section}{\protect\numberline{}Question 2}
 
