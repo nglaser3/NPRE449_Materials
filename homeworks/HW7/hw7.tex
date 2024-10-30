@@ -27,6 +27,8 @@
 \doublespacing
 
 \begin{document}
+\newcommand{\circled}[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
 \begin{titlepage}
 
 \centering
@@ -111,12 +113,12 @@ And so, for the mass equation:
 
 Next, the momentum equation. To do this we will break into x, y, and z equations, as the momentum equation is a vector equation. The equations x, y, and z will all have the same form just with different subscripts. The expansion will be done with x. So as to not have a multi-line equation, each term will be defined for specifically x. To do this various steps are undertaken. Firstly, the divergence of $\Vec{v}\Vec{v}$ can be seen as, in the x direction, $\nabla (v_x\Vec{v})$. Next, the pressure is simply just the derivative of pressure in the x direction. Then, the divergence of the stress tensor is functionally similair to the divergence of the vector-vector multiplication, $\nabla \stress_x$. Finally, the gravity form is simply the x-component of g.
 
-\newcommand{\mompvv}[1]{\pd{\rho v_{#1}^2}{x}{} + \pd{\rho v_{#1} v_y}{y}{} + \pd{\rho v_{#1} v_z}{z}{}}
+\newcommand{\mompvv}[1]{\pd{\rho v_{#1}v_x}{x}{} + \pd{\rho v_{#1} v_y}{y}{} + \pd{\rho v_{#1} v_z}{z}{}}
 \newcommand{\momP}[1]{\pd{P_{#1}}{#1}{}}
 \newcommand{\momds}[1]{\pd{\stress_{#1 x}}{x}{} + \pd{\stress_{#1 y}}{y}{} + \pd{\stress_{#1 z}}{z}{}}
 \newcommand{\momg}[1]{\rho g_{#1}}
 \newcommand{\mom}[1]{
-\pd{\rho v_{#1}}{}{} + \left[\mompvv{x}\right] = -\momP{x} + \left[\momds{x}\right] +\momg{x}
+\pd{\rho v_{#1}}{t}{} + \left[\mompvv{#1}\right] = -\momP{#1} + \left[\momds{#1}\right] +\momg{#1}
 }
 \begin{equation}
 \begin{gathered}
@@ -223,8 +225,114 @@ Long form:
 \section*{Question 2}
 \addcontentsline{toc}{section}{\protect\numberline{}Question 2}
 
+From our assumptions, the mass and momentum equations simplify, in cylindrical coordinates, to:
+
+\begin{subequations}
+    \begin{equation}
+        \nabla\cdot\Vec{v} = 0
+    \end{equation}
+    \begin{equation}
+        0 = -\pd{P}{r}{} + \rho g_r
+    \end{equation}
+    \begin{equation}
+        0 = -\frac{1}{r}\pd{P}{\theta}{} + \rho g_{\theta}
+    \end{equation}
+    \begin{equation}
+        0 = -\pd{P}{z}{} + \mu \left[ \frac{1}{r}\pd{}{r}{}r\pd{v_z}{r}{} \right]
+    \end{equation}
+\end{subequations}
+
+Finally the energy equation simplifies as follows, because specific internal energy $u$ is simply $c_pT$:
+\begin{subequations}
+    \begin{equation}
+        \nabla\cdot\rho\Vec{v}u = -\nabla\cdot\Vec{q}''
+    \end{equation}    
+    \begin{equation}
+        \rho c_p\left[ \frac{1}{r}\pd{}{r}{}(rv_rT) + \frac{1}{r}\pd{v_{\theta}T}{\theta}{} + \pd{v_zT}{z}{}\right] = k\left[\frac{1}{r}\pd{}{r}{}r\pd{T}{r}{} +\frac{1}{r^2}\pd{T}{\theta}{2} + \pd{T}{z}{2}\right]
+    \end{equation}
+    \begin{equation}
+        v_z\pd{T}{z}{} = \frac{k}{\rho c_p} \frac{1}{r}\pd{}{r}{}r\pd{T}{r}{}
+    \end{equation}
+\end{subequations}
+
+Finally we can solve these equations for axial velocity and temperature. 
+
+First, we will solve for the pressure profile. We know that $\Vec{g}$ is equal to $\langle -g\sin(\theta), \: -g\cos(\theta), \: 0\rangle$. Thus:
+
+\begin{subequations}
+    \begin{equation}
+        P = -\rho g r \sin{\theta} + C(\theta, z)
+    \end{equation}
+    \begin{equation}
+        P = -\rho g r \sin\theta + C(r, z)
+    \end{equation}
+\end{subequations}
+
+And because the result from both radial and azimuthal solving yields the same functional form, we know that $C$ must only be a function of z. Further, we know that pressure must be a linear function of z, as its derivative with respect to z must not be a function of z. Thus, we can solve for the velocity profile. 
+
+\begin{subequations}
+    \begin{equation}
+        \frac{P_0r}{\mu} = \pd{}{r}{}r\pd{v_z}{r}{}
+    \end{equation}
+    \begin{equation}
+        \frac{P_0r}{2\mu} +\frac{C_1}{r}= \pd{v_z}{r}{}
+    \end{equation}
+    \begin{equation}
+        v_z(r) = \frac{P_0r^2}{4\mu} + C_1\ln r + C_2
+    \end{equation}
+\end{subequations}
 
 \newpage
+Next for our boundary conditions:
+\begin{itemize}
+    \item[\circled{1}] No-Slip Condition: $v_z(R_o) = 0$
+    \item[\circled{2}] Symmetry: $\pd{v_z(0)}{r}{}=0$, or Finiteness at the centerline
+\end{itemize}
+Thus, $C_1$ must be 0 by \circled{2}, and then investigating \circled{1}, $C_2$ must be:
+\begin{subequations}
+    \begin{equation}
+        v_z(R_0) = \frac{P_0R_0^2}{4\mu} + C = 0
+    \end{equation}
+    \begin{equation}
+        C = -\frac{P_0R_0^2}{4\mu}
+    \end{equation}
+\end{subequations}
+
+Thus our axial velocity, recognizing that $P_0 = \frac{-\Delta P}{l}$, is:
+\begin{equation}
+    v_z(r) = \frac{\Delta PR^2}{4\mu l} -\frac{\Delta P r^2}{4\mu l} = \frac{\Delta P}{4\mu l}(R^2-r^2) = \langle v_z\rangle (1-\frac{r^2}{R^2})
+\end{equation}
+Such that $\langle v_z \rangle = \frac{\Delta PR^2}{4\mu l}$. 
+
+Now, for the temperature. Importantly, $\pd{T}{z}{}$ is a constant because of the definition of fully developed temperature flow. .
+\newcommand{\vz}{\langle v_z \rangle}
+\newcommand{\lhcrud}{\frac{\vz\ \rho\ c_p}{k}\pd{T}{z}{}}
+\begin{subequations}
+    \begin{equation}
+        v_z(r)\pd{T}{z}{} = \frac{k}{\rho c_pr}\pd{}{r}{}r\pd{T}{r}{}
+    \end{equation}
+    \begin{equation}
+         \lhcrud (r-\frac{r^3}{R^2}) = \pd{}{r}{}r\pd{T}{r}{}
+    \end{equation}
+    \begin{equation}
+        \lhcrud (\frac{r}{2}-\frac{r^3}{4R^2}) +\frac{C_1}{r}= \pd{T}{r}{}
+    \end{equation}
+    \begin{equation}
+        T(r,z) = \lhcrud \left[\frac{r^2}{4}-\frac{r^4}{16R^2}\right] + C_1 \ln(r) + C_2
+    \end{equation}
+\end{subequations}
+
+And then again for simplicity, I define $\lhcrud$ as equal to $\xi$:
+\begin{equation}
+    T(r,z) = \xi \left[\frac{r^2}{4}-\frac{r^4}{16R^2}\right] + C_1 \ln(r) + C_2
+\end{equation}
+
+Now for our boundary conditions:
+
+\begin{itemize}
+    \item[\circled{1}] Symmetry: $\pd{T(0)}{r}{}$, or Finiteness at the center line
+    \item[\circled{2}]  $q''=h(T_s - T_{cl})$, or $T(R) = \frac{q''}{h}+ T(0)$
+\end{itemize}
 \section*{Question 3}
 \addcontentsline{toc}{section}{\protect\numberline{}Question 2}
 
