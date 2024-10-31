@@ -370,7 +370,82 @@ Thus:
         \frac{T_s(z) - T(r,z)}{T_s(z) - T_{cl}(z)} = \frac{r^4}{3R^4} - \frac{4r^2}{3R^2} + 1 
     \end{equation}
 \end{subequations}
+
+Finally, the normalized temperature and velocity distributions are:
+\begin{figure}[!h!]
+    \centering
+    \includegraphics[width=0.5\linewidth]{plots/q2.png}
+    \label{fig:q2}
+\end{figure}
+
+\newpage
 \section*{Question 3}
 \addcontentsline{toc}{section}{\protect\numberline{}Question 2}
+To begin, we can skip all of the beginning cruft. We already know our velocity profile:
 
+\begin{equation}
+    v_z(r) = \frac{\Delta P}{4\mu\ l} (r^2 - R^2)
+\end{equation}
+And taking the area average of this:
+\begin{subequations}
+    \begin{equation}
+        \vz = \frac{1}{\pi R^2}\int^{2\pi}_0\int_0^R r v_z(r) dr d\theta
+    \end{equation}
+    \begin{equation}
+        \vz = \frac{1}{\pi R^2}\frac{\pi\Delta P}{2\mu l}(\frac{r^4}{4}-\frac{R^2r^2}{2})\biggr|^R_0
+    \end{equation}
+    \begin{equation}
+        \vz = \frac{-R^2\Delta P}{8\mu l}
+    \end{equation}
+\end{subequations}
+
+Thus, the velocity profile is equal to $2\vz (1-\frac{r^2}{R^2})$.
+
+Next, our energy equation is: 
+\begin{subequations}
+    \begin{equation}
+        \rho c_p v_z(r) \pd{T}{z}{} = \frac{k}{r}\pd{}{r}{}r\pd{T}{z}{} + \mu \left( \pd{v_z}{r}{} \right)^2
+    \end{equation}
+    \begin{equation}
+        \rho c_p (1-\frac{r^2}{R^2}) \pd{T}{z}{} =  16\mu\vz^2\frac{r^2}{R^4}
+    \end{equation}
+\end{subequations}
+
+Next, to integrate both sides through the volume:
+%%\renewcommand{\vz}{\frac{R^2}{4\mu}\pd{P}{z}{}}
+\begin{subequations}
+    \begin{equation}
+        \iiint_V r\rho c_p \vz(1-\frac{r^2}{R^2}) \pd{T}{z}{} dV = \iiint_V 16r\mu \vz^2 \frac{r^2}{R^4} dV
+    \end{equation}
+    \begin{equation}
+        \rho c_p \int_0^{2\pi}\int_0^R\int_0^l (r-\frac{r^3}{R^2}) \pd{T}{z}{} dzd\theta dr
+        =
+        16\mu\vz\int_0^{2\pi}\int_0^R\int_0^l \frac{r^3}{R^4} dzd\theta dr
+    \end{equation}
+    \begin{equation}
+        2\pi\rho c_p\Delta T\left( \frac{r^2}{2} -\frac{r^4}{4R^2} \right)\biggr|^R_0 = 32\pi\mu\vz\frac{r^4}{4R^4}\biggr|^R_0 (z)\biggr|^l_0
+    \end{equation}
+    \begin{equation}
+        \rho c_p\Delta T R^2 = 16\mu\vz l
+    \end{equation}
+    \begin{equation}
+        l = \frac{\rho c_p \Delta T R^2}{16\mu \vz}
+    \end{equation}
+\end{subequations}
+
+Finally, we can find the average velocity, $\vz$, with the reynolds number of laminar flow. 
+
+\begin{equation}
+    Re = \frac{2\rho \vz R}{\mu}
+    \vz = \frac{Re \mu}{2R\rho}
+\end{equation}
+
+Finally, using a reynolds number of 2300, we can solve for the two lengths:
+
+\begin{equation}
+    \boxed{l = 28236.669 m, D = 0.1 m}
+\end{equation}
+\begin{equation}
+    \boxed{l = 28.237 m, D = 0.01 m}
+\end{equation}
 \end{document}
