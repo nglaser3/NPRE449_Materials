@@ -1,5 +1,102 @@
+\documentclass{article}
 \usepackage{amsmath}
+\usepackage{array}
+\usepackage{booktabs}
 
 \begin{document}
+\begin{table}[!h!]
+    \centering
+    \renewcommand{\arraystretch}{1.5}
+    \begin{tabular}{|c|c|}
+        \hline
+         Pe & $\frac{rate\ mass\ advection}{rate\ thermal\ diffusion }$  \\
+         Re & $\frac{intertial\ forces}{viscous\ forces}$ \\
+         \hline
+    \end{tabular}
+    \caption{Functional Forms}
+    \label{funcform}
+\end{table}
+\newcommand{\pd}[3]{\frac{\partial^{#3}#1}{\partial{#2}^{#3}}}
+\section{1-Dimensional Equations}
+\begin{subequations}
+    \begin{equation}
+        \pd{\rho}{t}{} + \pd{\rho v}{z}{} = 0
+        \label{mass}
+    \end{equation}
+    \begin{equation}
+        \pd{\rho v}{t}{} + \pd{}{z}{}\rho v^2 = -\pd{P}{z}{}-\tau_F\frac{\xi_w}{A_f} - \rho g \sin(\theta)
+        \label{momentum}
+    \end{equation}
+    \begin{equation}
+        \pd{\rho h}{t}{} + \pd{}{z}{}\rho v h = \frac{q''\xi_h}{A}+\pd{P}{t}{} + q'''
+        \label{energy}
+    \end{equation}
+\end{subequations}
+
+Where: 
+\begin{table}[!h!]
+    \centering
+    \renewcommand{\arraystretch}{1.5}
+    \begin{tabular}{c|c}
+         Parameter & Definition \\
+         \midrule
+         $\tau_F$ & $\frac{f\rho v^2}{2}$ = $\frac{fG^2}{2\rho}$\\
+         \hline
+         $\xi_w$ & Wetted Perimeter\\
+         \hline
+         $\xi_h$ & Heated Perimeter\\
+         \hline
+         $A_f$ & Fluid area \\
+         \hline
+    \end{tabular}
+    \label{tab:my_label}
+\end{table}
+
+f correlations:
+
+\begin{itemize}
+    \item if $Re<2100$, $ f = \frac{16}{Re}$
+    \item if $3,000 \leq Re\leq 100,000 $,  $f = \frac{0.079}{Re^{.25}}$
+\end{itemize}
+
+The energy equation hols slightly different forms for single/ double $\Phi$. For single, $h \approx c_pT$, and for double leave it as h, as temperature change doesn't happen. 
+
+To treat the boundary condition, newtons law of cooling becomes: $q'' = h(T_w - T_f)$, where $T_f$ is the temperature of the fluid we found. Nusselt number is used. 
+
+Correlations for Nusselt
+
+\begin{itemize}
+    \item Fully developed
+    \begin{itemize}
+        \item laminar: $Nu = C$.
+        \begin{itemize}
+        \item For pipe: $Nu_D = 4.36$ (constant heat flux), $Nu_d = 3.66$ constant wall temp
+        \end{itemize}
+        \item Turbulent: Dittus-Boelter: $CRe^mPr^n$
+        \begin{itemize}
+        \item Pipe flow: $C = 0.023, m = 0.8,n =0.4$ for $T_w \geq T_f$, $n = .3$ for $T_w \leq T_f$
+        \end{itemize}
+    \end{itemize}
+
+    \item Developing
+    \begin{itemize}
+        \item Hydrodynamic: $\frac{z_{FD}}{D} \approx 0.05 Re$
+        \item Thermally: laminar$:\frac{z_{FD}}{D} = 0.05RePr $ Turb: $\frac{v_{FD}}{D} \approx 10$
+    \end{itemize}
+    \item Average Nusselt over developing region
+    \begin{itemize}
+        \item $\Bar{Nu} = Nu_{FD}\left( 1 + \frac{C}{(z/d)^a} \right)$
+    \end{itemize}
+    \item Complex geometry :
+    \begin{itemize}
+        \item $L_c = D_n = \frac{4A_f}{\xi}$, $\xi$ is h when using for thermal and w when using for hydrodynamic
+        \item Rod Bundles: $Nu = FNu$
+    \end{itemize}
+    \item Fluid type:
+    \begin{itemize}
+        \item Large Pr: $Nu = 0.027Re^{0.8}Pr^{1/3}(\frac{\mu}{\mu_w})^{0.14}$, where $\mu_w$ is the viscosity at the wall
+        \item Low Pr: $Nu = 4.82 + 0.0185Pe^{0.827}$
+    \end{itemize}
+\end{itemize}
 
 \end{document}

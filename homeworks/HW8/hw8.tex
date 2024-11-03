@@ -1,0 +1,132 @@
+\documentclass{article}
+% Language setting
+% Replace `english' with e.g. `spanish' to change the document language
+\usepackage{biblatex} %Imports biblatex package
+\addbibresource{sample.bib}
+\usepackage{changepage}
+\usepackage[english]{babel}
+\usepackage{tikz}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{accents}
+\usepackage{empheq}
+\usepackage{pythonhighlight}
+\newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{M}[1]{>{\centering\arraybackslash}m{#1}}
+
+% Set page size and margins
+% Replace `letterpaper' with `a4paper' for UK/EU standard size
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+\usepackage{graphicx}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{setspace}
+\usepackage{booktabs}
+\usepackage[T1]{fontenc}
+\usepackage{longtable}
+\doublespacing
+
+\begin{document}
+\newcommand{\circled}[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+
+\newcommand{\pd}[3]{\frac{\partial^{#3}#1}{\partial {#2}^{#3}}}
+\begin{titlepage}
+
+\centering
+\scshape
+\vspace{\baselineskip}
+
+%
+\rule{\textwidth}{1.6pt}\vspace*{-\baselineskip}\vspace*{2pt}
+\rule{\textwidth}{0.4pt}
+
+{\Huge \textbf{\textsc{NPRE 449: Homework 7 \\
+\vspace{15pt}}}}
+
+\rule{\textwidth}{0.4pt}\vspace*{-\baselineskip}\vspace{3.2pt}
+\rule{\textwidth}{1.6pt}\vspace{6pt}
+%%\centerline{\textit{University of Illinois at Urbana-Champaign}} 
+\vspace{1.5\baselineskip}
+
+
+\large \centerline{\textbf{Author:} Nathan Glaser}
+\large \centerline{\textbf{Net-ID:} nglaser3}
+\quad
+
+\vfill
+\large \centerline{September 18, 2024}
+%
+\pagenumbering{gobble}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+\pagenumbering{arabic}
+
+\section{Question 1}
+To begin, our differential equations for single phase, 1-D are:
+
+\begin{subequations}
+    \begin{equation}
+        \pd{\rho}{t}{} + \pd{\rho v}{z}{} = 0
+        \label{mass}
+    \end{equation}
+    \begin{equation}
+        \pd{\rho v}{t}{} + \pd{}{z}{}\rho v^2 = -\pd{P}{z}{}-\tau_F\frac{\xi_w}{A_f} - \rho g \sin(\theta)
+        \label{momentum}
+    \end{equation}
+    \begin{equation}
+        \pd{\rho h}{t}{} + \pd{}{z}{}\rho v h = \frac{q''\xi_h}{A}+\pd{P}{t}{} + q'''
+        \label{energy}
+    \end{equation}
+\end{subequations}
+
+Now, we apply our simplifications. Assuming steady state, substituting in $G = \rho v$, the pipe is horizontal (i.e. $\theta = 0$), $h = c_pT$, incompressible, and no heat-generation:
+
+\begin{subequations}
+    \begin{equation}
+        \pd{G}{z}{} = 0
+        \label{ssmass}
+    \end{equation}
+    \begin{equation}
+        \pd{}{z}{}\frac{G^2}{\rho} = -\pd{P}{z}{} - \tau_F\frac{\xi_w}{A_f}
+        \label{ssmomentum}
+    \end{equation}
+    \begin{equation}
+         c_p\pd{GT}{z}{} = \frac{q''\xi_h}{A}
+    \end{equation}
+\end{subequations}
+
+From the mass equation, \eqref{ssmass}, we see the mass flux is constant. Further, the definition of $\tau_F$ is $\frac{fG^2}{2\rho}$. Thus, the momentum and energy equations simplify further:
+\begin{subequations}
+    \begin{equation}
+        -\pd{P}{z}{} = \frac{fG^2\xi_w}{2\rho A_f}
+    \end{equation}
+    \begin{equation}
+        c_pG\pd{T}{z}{} = \frac{q''\xi_h}{A}
+    \end{equation}
+\end{subequations}
+
+Now, solving our energy equation we can find the temperature distribution:
+
+\begin{subequations}
+    \begin{equation}
+        \pd{T}{z}{}=\frac{q''\xi_h}{c_pGA}
+    \end{equation}
+    \begin{equation}
+        \int_0^l\partial T  = \int_0^l\frac{q''\xi_h}{c_pGA}\partial z
+    \end{equation}
+    \begin{equation}
+        T(l) - T(0) = \frac{q''\xi_h}{c_pGA} l
+    \end{equation}
+    \begin{equation}
+        \frac{\Delta Tc_pGA}{q''\xi_h} = l
+    \end{equation}
+    \begin{equation}
+        \boxed{l = }
+    \end{equation}
+\end{subequations}
+
+    
+\end{document}
