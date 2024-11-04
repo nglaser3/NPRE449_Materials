@@ -124,9 +124,141 @@ Now, solving our energy equation we can find the temperature distribution:
         \frac{\Delta Tc_pGA}{q''\xi_h} = l
     \end{equation}
     \begin{equation}
-        \boxed{l = }
+        \boxed{l = 6.652\ m}
     \end{equation}
 \end{subequations}
 
-    
+where material properties were evaluated at the average temperature of the fluid, $50/ ^oC$.
+
+To find the surface temperature at the exit, we utilize newtons law of cooling:
+
+\begin{equation}
+    q'' = h(T_s(z) - \Bar{T}(z))
+    \label{newtons}
+\end{equation}
+
+To find h, we must first determine which correlation to use. Thus we find the Reynolds number, $\frac{GD}{\mu}$, as 598.85 (using material properties at $80\ ^oC$. Thus the flow is laminar and because it is fully developed in a pipe, we can use $Nu = 4.36$. Thus, using the definition for $Nu= \frac{hD}{k}$, we can solve for h. Using material properties of water at Standard pressure and $80\ ^oC$, we find h to be 48.468. Thus, plugging in all known values into Eq. \ref{newtons}, and solving for $T_s$:
+
+\begin{subequations}
+    \begin{equation}
+        T_s(l) = \frac{q''}{h} + \Bar{T}(l)
+    \end{equation}
+    \begin{equation}
+        \boxed{T_s(l) = 121.264}
+    \end{equation}
+\end{subequations}
+
+\newpage
+\section{Question 2}
+
+To begin, our governing equations for the fluid, assuming steady state, are:
+
+\begin{subequations}
+    \begin{equation}
+        \pd{G}{z}{} = 0
+    \end{equation}
+    \begin{equation}
+        G^2\pd{}{z}{}\frac{1}{\rho} = -\pd{P}{z}{} - \tau_F\frac{\xi_w}{A_f} - \rho g \sin(\theta)
+    \end{equation}
+    \begin{equation}
+        c_pG\pd{T_f}{z}{} = \frac{q''\xi_h}{A}+q'''
+    \end{equation}
+\end{subequations}
+
+Assuming incompressibility, horizontal pipe, and no heat generation in our fluid the momentum and energy equations simplify to:
+
+\begin{subequations}
+    \begin{equation}
+        -\pd{P}{z}{} = \tau_F\frac{\xi_w}{A_f} = \frac{fG^2\xi_w}{2\rho A_f}
+    \end{equation}
+    \begin{equation}
+        c_pG\pd{T_f}{z}{} = \frac{q''\xi_h}{A}
+    \end{equation}
+\end{subequations}
+
+Then, through control volume analysis, we can relate $q'''$ in the wall to the heat flux into the fluid:
+
+\begin{equation}
+    q''A_s = q'''V_p
+\end{equation}
+
+ plugging this back into the energy equation and solving for the temperature distribution:
+
+ \begin{subequations}
+     \begin{equation}
+         \pd{T_f}{z}{} = \frac{q'''V_p\xi_h}{c_pGA_fA_s}
+     \end{equation}
+     \begin{equation}
+         T_f(z) = \frac{q'''V_p\xi_h}{c_pGA_fA_s} z + T_0
+     \end{equation}
+     \begin{equation}
+         T_f(z) = \frac{q'''\pi h(r^2_o - r^2_i)(2\pi r_i)}{c_pG(\pi r_i^2)(2\pi r_ih)}z + T_0
+     \end{equation}
+ \end{subequations}
+
+plugging in l for z, we can solve for l:
+\begin{subequations}
+    \begin{equation}
+        T_f(z) = \frac{q'''(r^2_o - r^2_i)}{c_pG(\ r_i^2)}z + T_0
+    \end{equation}
+    \begin{equation}
+       l = \frac{\Delta Tc_pG( r_i^2)}{q'''(r^2_o - r^2_i)}
+    \end{equation}
+    \begin{equation}
+        \boxed{l = 17.734\ m}
+    \end{equation}
+\end{subequations}
+
+Next to solve for the heat transfer coefficient we simply solve newtons law of cooling for h:
+
+\begin{subequations}
+    \begin{equation}
+        q'' = h(T_s - \Bar{T})
+    \end{equation}
+    \begin{equation}
+        h = \frac{q''}{T_s - \Bar{T}}
+    \end{equation}
+    \begin{equation}
+        \boxed{h = 1500}
+    \end{equation}
+\end{subequations}
+
+Next, to solve for the heat transfer coefficient we first solve for the Reynolds: $Re = \frac{GD}{\mu} = 9749.467$. Thus our flow is turbulent, and we will use the Dittus-Boelter correlation to find h:
+\begin{equation}
+    Nu = 0.023Re^{0.8}Pr^{0.3}
+\end{equation}
+
+Thus our Nusselt number is 55.485, and then solving for h we get:
+
+\begin{equation}
+    \boxed{h = 2114.197}
+\end{equation}
+
+\section{Question 3}
+
+First, performing an energy balance, we can determine how much heat was lost by the hot air. 
+
+\begin{equation}
+    \Dot{E}_{loss} = \Dot{m}c_p\Delta T 
+\end{equation}
+
+\begin{equation}
+    \boxed{\Dot{E}_{loss} = 1300.65 W}
+\end{equation}
+Further, we can relate the heat loss by the air to the heat flux due to convection by:
+
+\begin{equation}
+    hA_s\Delta T_{air,o} = q''A_s= \Dot{m}c_p\Delta T_{air,i}
+\end{equation}
+
+thus q'' is simply:
+
+\begin{equation}
+    \boxed{q'' = \frac{\Dot{m}c_p\Delta T_{air,i}}{A_s} = 552.013}
+\end{equation}
+
+and then, because the ambient air is at $o^C$, the $\Delta T_{air,o}$ is simply the surface temperature of the duct:
+\begin{equation}
+    \boxed{T_s = \frac{q''}{h} = 92.002}
+\end{equation}
 \end{document}
