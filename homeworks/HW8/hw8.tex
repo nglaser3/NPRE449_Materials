@@ -261,4 +261,121 @@ and then, because the ambient air is at $o^C$, the $\Delta T_{air,o}$ is simply 
 \begin{equation}
     \boxed{T_s = \frac{q''}{h} = 92.002}
 \end{equation}
+
+\section{Question 4}
+
+To begin, the governing equations for this fluid are:
+
+\begin{subequations}
+    \begin{equation}
+        \label{mass}
+        \pd{G}{z}{} = 0
+    \end{equation}
+    \begin{equation}
+        \label{momentum}
+        G^2\pd{}{z}{}\frac{1}{\rho} = -\pd{P}{z}{} - \tau_F\frac{\xi_F}{A_f}
+    \end{equation}
+    \begin{equation}
+        \label{energy}
+        c_pG\pd{T_f}{z}{} = \frac{q''\xi_h}{A}
+    \end{equation}
+\end{subequations}
+
+However, for this problem set-up we only care about the energy equation. Thus, solving this equation:
+\newcommand{\const}{\frac{h \xi_h}{c_pAG}}
+\begin{subequations}
+    \begin{equation}
+        \pd{T_f}{z}{} = \frac{q''\xi_h}{c_pAG}
+    \end{equation}
+    \begin{equation}
+        \pd{\theta}{z}{} = \const \theta (z)
+    \end{equation}
+    \begin{equation}
+        \theta(z) = \theta_0 e^{\const z}
+    \end{equation}
+    \begin{equation}
+        T_f(z) = T_{s} - \left( T_s - T_{f,in} \right) e^{-\const z}
+    \end{equation}
+\end{subequations}
+
+To find h, we first determine reynolds number. We find Re to be $397.888$, and thus it is a laminar pipe. Hence, we use a constant Nusselt number: $3.66$. Finally, we find h to simply be: $10.102$. Plugging this in, and solving for $T_f(L)$, we find the outlet temperature to be:
+
+\begin{equation}
+    \boxed{T_f(L) = 24.751 ^oC}
+\end{equation}
+
+Next, to find the heat transfer rate we utilize $\Dot{m}c_p \Delta T$:
+\begin{subequations}
+    \begin{equation}
+        q = \Dot{m}c_p \Delta T
+    \end{equation}
+    \begin{equation}
+        \boxed{q = 5062.139\ W}
+    \end{equation}
+\end{subequations}
+
+
+\section{Question 5}
+
+To begin, the governing equations for this fluid are:
+
+\begin{subequations}
+    \begin{equation}
+        \label{mass}
+        \pd{G}{z}{} = 0
+    \end{equation}
+    \begin{equation}
+        \label{momentum}
+        G^2\pd{}{z}{}\frac{1}{\rho} = -\pd{P}{z}{} - \tau_F\frac{\xi_F}{A_f}
+    \end{equation}
+    \begin{equation}
+        \label{energy}
+        c_pG\pd{T_f}{z}{} = \frac{q''\xi_h}{A}
+    \end{equation}
+\end{subequations}
+
+However, for this problem set-up we only care about the energy equation. Thus, solving this equation:
+\begin{subequations}
+    \begin{equation}
+        \pd{T_f}{z}{} = \frac{q''\xi_h}{c_pAG}
+    \end{equation}
+    \begin{equation}
+        \pd{\theta}{z}{} = \const \theta (z)
+    \end{equation}
+    \begin{equation}
+        \theta(z) = \theta_0 e^{\const z}
+    \end{equation}
+    \begin{equation}
+        T_f(z) = T_{s} - \left( T_s - T_{f,in} \right) e^{-\const z}
+    \end{equation}
+\end{subequations}
+
+Solving this equation for L, the distance required to heat the pipe to 75 $^o C$:
+
+\begin{subequations}
+    \begin{equation}
+        T_f(z) = T_{s} - \left( T_s - T_{f,in} \right) e^{-\const z}
+    \end{equation}
+    \begin{equation}
+        \frac{\theta (z)}{\theta_0} = e^{-\const L}
+    \end{equation}
+    \begin{equation}
+        \ln\left( \frac{\theta (z)}{\theta_0} \right) = \const L
+    \end{equation}
+    \begin{equation}
+        L = \ln\left( \frac{\theta (z)}{\theta_0} \right) 
+        \left[ \frac{c_pAG}{h\xi_h} \right]
+    \end{equation}
+    \begin{equation}
+        h = \frac{Nuk}{D} = \frac{0.023 (\frac{GD}{\mu})^{0.8} (\frac{\mu c_p}{k})^{0.4}k}{D} = 6918.149
+    \end{equation}
+    \begin{equation}
+        \boxed{L = 10.563 m}
+    \end{equation}
+\end{subequations}
+
+\section{Question 6}
+find expression relating q'',q', and q'''. 
+
+Find $T_f$ as a function of z
 \end{document}

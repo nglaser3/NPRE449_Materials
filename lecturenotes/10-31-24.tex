@@ -99,4 +99,88 @@ Correlations for Nusselt
     \end{itemize}
 \end{itemize}
 
+\section{Analysis of fuel rod}
+\subsection{Assumptions}
+Radial component of flux is essentially constant, macroscopically you have variation but zooming in on one rod there is no real varition. There is variation in z, so flux takes the form of:
+\begin{equation}
+    \phi = \phi_0\cos(\frac{\pi z}{h_e})
+\end{equation}
+
+\begin{itemize}
+    \item Steady state
+    \item  Constant properties in each region
+    \item f is a known constant
+    \item negligible volumetric heat generatino in fluid clad and gap
+    \item neglect axial conduction
+    \item $\phi$ is uniform in r and $\theta$
+    \item  Fully developed
+\end{itemize}
+
+\subsection{What are we finding}
+\begin{enumerate}
+    \item $\Delta P$ along the channel
+    \item $T_f(z)$
+    \item  $T_f(z= h_e)$
+    \item  $T_{c,0}(z)$
+    \item $T_{c,0} max$
+    \item $T_{cl}(z)$
+    \item $T_{cl} max$
+\end{enumerate}
+
+\subsection{Solving}
+
+\begin{subequations}
+    \begin{equation}
+        \pd{G}{z}{} = 0
+        \label{mass}
+    \end{equation}
+    \begin{equation}
+       0 = -\pd{P}{z}{}-\tau_F\frac{\xi_w}{A_f} - \rho g
+        \label{momentum}
+    \end{equation}
+    \begin{equation}
+         \pd{}{z}{}G c_pT = \frac{q''\xi_h}{A} + q'''
+        \label{energy}
+    \end{equation}
+\end{subequations}
+
+simplifying:
+
+\begin{subequations}
+    \begin{equation}
+        -\pd{P}{z}{} = \tau_F\frac{\xi_w}{A_f} + \rho g
+    \end{equation}
+    \begin{equation}
+        Gc_p\pd{T}{z}{} = \frac{q''\xi_h}{A}
+    \end{equation}
+\end{subequations}
+
+solving:
+
+\begin{subequations}
+    \begin{equation}
+        \Delta P = (\frac{fG^2\xi_w}{2\rho A_f} + \rho g) \cdot l
+    \end{equation}
+    \begin{equation}
+        \begin{gathered}
+        q''' (\pi r_f^2 dz) = q''\xi_h dz\\
+        q' dz = q'' \xi_h dz\\
+        q'' = \frac{q'}{\xi_h} \\
+        q''' = \chi \Sigma_f \phi
+        q' = q'_0 \cos(\frac{\pi z}{h_e})\\
+        \pd{T}{z}{} = \frac{q'_0 \cos(\frac{\pi z}{h_e})}{GA_fc_p} \\ 
+        integrating\ from\ -\frac{h_e}{2}\ to\ z:\\
+        T_f(z) = \frac{h_eq'_0 }{\pi GA_fc_p} \left[\sin(\frac{\pi z}{h_e}) + \sin(\frac{\pi h_e}{2h_e})\right] + C_1
+    \end{gathered}
+    \end{equation}
+\end{subequations}
+
+with $T_f(z)$, find the outer clad temperature, then boom its a simple general heat diffusion equation!
+
+Clad BCs:
+\begin{enumerate}
+    \item $q'' = \frac{q'}{\xi_h} = -k_c\pd{T_c}{r}{}{}$
+    \item $T_c(r=R_{c,o},z) = T_{c,o}(z)$
+\end{enumerate}
+
 \end{document}
