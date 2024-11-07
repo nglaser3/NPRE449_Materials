@@ -41,7 +41,7 @@
 \rule{\textwidth}{1.6pt}\vspace*{-\baselineskip}\vspace*{2pt}
 \rule{\textwidth}{0.4pt}
 
-{\Huge \textbf{\textsc{NPRE 449: Homework 7 \\
+{\Huge \textbf{\textsc{NPRE 449: Homework 8 \\
 \vspace{15pt}}}}
 
 \rule{\textwidth}{0.4pt}\vspace*{-\baselineskip}\vspace{3.2pt}
@@ -55,7 +55,7 @@
 \quad
 
 \vfill
-\large \centerline{September 18, 2024}
+\large \centerline{November 6, 2024}
 %
 \pagenumbering{gobble}
 \end{titlepage}
@@ -147,6 +147,8 @@ To find h, we must first determine which correlation to use. Thus we find the Re
         \boxed{T_s(l) = 121.264}
     \end{equation}
 \end{subequations}
+
+Finally, fully developed and single phase flow is a poor assumption, as the temperature at the outlet is past the boiling point of water, thus this is actually two phase flow. Further, because it is two-phase, the temperature profile must not be fully developed.
 
 \newpage
 \section{Question 2}
@@ -314,7 +316,7 @@ Next, to find the heat transfer rate we utilize $\Dot{m}c_p \Delta T$:
     \end{equation}
 \end{subequations}
 
-
+\newpage
 \section{Question 5}
 
 To begin, the governing equations for this fluid are:
@@ -417,24 +419,117 @@ Then:
 
 Then, to solve for the pipe length and pressure drop as a function of $\Dot{m}$ and D:
 
-\begin{figure}
+\begin{figure}[!hp!]
     \centering
     \includegraphics[width=\linewidth]{simple.png}
     \caption{Pressure Drop (left) and Pipe Length (right)}
     \label{fig:enter-label}
 \end{figure}
 
-Or in much prettier form:
+Or in much prettier form, see the \href{appendix}{appendix}.
+\newpage
+\section{Question 6}
+To begin, we do a control volume analysis on the fuel rod:
 
+\begin{subequations}
+    \begin{equation}
+        \pi Dq''dz = q'''\pi \frac{D^2}{4}dz
+    \end{equation}
+    \begin{equation}
+        q''' = \frac{4q'}{\pi D^2}
+    \end{equation}
+    \begin{equation}
+        \pi D q''dz = q'dz
+    \end{equation}
+    \begin{equation}
+        \boxed{q'' = \frac{q'}{\xi_h}}
+    \end{equation}
+\end{subequations}
+
+Next, we analyze the mass, momentum, and energy equations:
+
+\begin{subequations}
+    \begin{equation}
+        \label{mass}
+        \pd{G}{z}{} = 0
+    \end{equation}
+    \begin{equation}
+        \label{momentum}
+        -\pd{P}{z}{} =  \tau_F\frac{\xi_w}{A_f} + \rho g
+    \end{equation}
+    \begin{equation}
+        \label{energy}
+        c_pG\pd{T_f}{z}{} = \frac{q''\xi_h}{A}
+    \end{equation}
+\end{subequations}
+
+Solving for $q''$ for use in the energy equation: 
+
+\begin{subequations}
+    \begin{equation}
+        q'' = \frac{q'}{\xi_h}
+    \end{equation}
+    \begin{equation}
+        q''' = q_0'''\sin{\frac{\pi z}{L}}
+    \end{equation}
+    \begin{equation}
+        q'' = \frac{A_{xs}q_0'''\sin{\frac{\pi z}{L}}}{\xi_h}
+    \end{equation}
+\end{subequations}
+
+Then subbing in and solving for the temperature distribution:
+
+\begin{subequations}
+    \begin{equation}
+        \pd{T_f}{z}{} = \frac{A_{xs}q_0'''}{c_pGA_f}\sin{\frac{\pi z}{L}}
+    \end{equation}
+    \begin{equation}
+        \int T_f = \int_0^z\frac{A_{xs}q_0'''}{c_pGA_f}\sin{\frac{\pi z}{L}}
+    \end{equation}
+    \begin{equation}
+    \boxed{
+        T_f(z) = \frac{A_{xs}q_0'''L}{c_pGA_f\pi}
+        \left[1 - \cos{\frac{\pi z}{L}}\right] + T_{f,in}}
+    \end{equation}
+\end{subequations}
+
+Then, finding the maximum surface temperature, we simply differentiate newtons law of cooling:
+
+\begin{subequations}
+    \begin{equation}
+        q''(z) = h(T_s(z) - T_f(z))
+    \end{equation}
+    \begin{equation}
+        T_s(z) = \frac{q''}{h} + T_f(z)
+    \end{equation}
+    \begin{equation}
+        T_s(z) = \frac{A_{xs}q_0'''\sin{\frac{\pi z}{L}}}{h\xi_h} + \frac{A_{xs}q_0'''L}{c_pGA_f\pi}
+        \left[1 - \cos{\frac{\pi z}{L}}\right] + T_{f,in}
+    \end{equation}
+    \begin{equation*}
+        differentiating\ with\ respect\ to\ z:
+    \end{equation*}
+    \begin{equation}
+        0 = \frac{A_{xs}q_0'''\pi}{h\xi_hL}\cos{\frac{\pi z}{L}}
+        + \frac{A_{xs}q_0'''}{c_pGA_f}\sin{\frac{\pi z}{L}}
+    \end{equation}
+    \begin{equation}
+       - \frac{\pi  c_p GA_f}{h\xi_hL} \cot{\frac{\pi z}{L}} = 1
+    \end{equation}
+    \begin{equation}
+        \cot{\frac{\pi z}{L}} = - \frac{h\xi_hL}{\pi c_p GA_f}
+    \end{equation}
+    \begin{equation}
+        z = \arctan{\left(-\frac{\pi c_p GA_f}{h\xi_hL}\right)} \frac{L}{\pi}
+    \end{equation}
+\end{subequations}
+
+\newpage
+\section{Appendix}\label{appendix}
 \begin{figure}[!hp!]
     \centering
     \includegraphics[width=\linewidth]{contour.png}
     \caption{Pressure Drop (left) and Pipe Length (right)}
     \label{fig:pipelength}
 \end{figure}
-
-\section{Question 6}
-find expression relating q'',q', and q'''. 
-
-Find $T_f$ as a function of z
 \end{document}
