@@ -273,7 +273,7 @@ To begin, the governing equations for this fluid are:
     \end{equation}
     \begin{equation}
         \label{momentum}
-        G^2\pd{}{z}{}\frac{1}{\rho} = -\pd{P}{z}{} - \tau_F\frac{\xi_F}{A_f}
+        G^2\pd{}{z}{}\frac{1}{\rho} = -\pd{P}{z}{} - \tau_F\frac{\xi_w}{A_f}
     \end{equation}
     \begin{equation}
         \label{energy}
@@ -326,7 +326,7 @@ To begin, the governing equations for this fluid are:
     \end{equation}
     \begin{equation}
         \label{momentum}
-        G^2\pd{}{z}{}\frac{1}{\rho} = -\pd{P}{z}{} - \tau_F\frac{\xi_F}{A_f}
+        G^2\pd{}{z}{}\frac{1}{\rho} = -\pd{P}{z}{} - \tau_F\frac{\xi_w}{A_f}
     \end{equation}
     \begin{equation}
         \label{energy}
@@ -334,7 +334,7 @@ To begin, the governing equations for this fluid are:
     \end{equation}
 \end{subequations}
 
-However, for this problem set-up we only care about the energy equation. Thus, solving this equation:
+Solving the energy equation:
 \begin{subequations}
     \begin{equation}
         \pd{T_f}{z}{} = \frac{q''\xi_h}{c_pAG}
@@ -373,6 +373,65 @@ Solving this equation for L, the distance required to heat the pipe to 75 $^o C$
         \boxed{L = 10.563 m}
     \end{equation}
 \end{subequations}
+
+Next, to find the pressure drop, we investigate the momentum equation:
+\begin{subequations}
+    \begin{equation}
+        -\pd{P}{z}{} = \tau_f \frac{\xi_w}{A_f}
+    \end{equation}
+    \begin{equation}
+        \Delta P = \frac{fG^2\xi_w l}{2\rho A_f}
+    \end{equation}
+\end{subequations}
+
+where $f$ is found via investigation of the Reynolds number. Recalling the Reynolds number as $116415.220$. 
+
+\begin{equation}
+    f = (0.79 \ln{Re} - 1.64)^{-2} = \boxed{0.0174}
+\end{equation}
+
+Then:
+
+\begin{subequations}
+    \begin{equation}
+        \Delta P = \frac{fG^2\xi_w L}{2\rho A_f}
+    \end{equation}
+    \begin{equation}
+        \Delta P = \frac{f \rho u^2  (\pi D) L}{2 (\pi /4 D^2)}
+    \end{equation}
+    \begin{equation}
+        \Delta P = \frac{2 f \rho u^2 L}{D}
+    \end{equation}
+    \begin{equation*}
+        Substituting\ in\ \frac{f}{4}\ for\ f:
+    \end{equation*}
+    \begin{equation}
+        \Delta P = \frac{f G^2 L }{2\rho D}
+    \end{equation}
+    \begin{equation}
+        \boxed{\Delta P = 5899.008\ kPa}
+    \end{equation}
+\end{subequations}
+
+
+
+Then, to solve for the pipe length and pressure drop as a function of $\Dot{m}$ and D:
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{simple.png}
+    \caption{Pressure Drop (left) and Pipe Length (right)}
+    \label{fig:enter-label}
+\end{figure}
+
+Or in much prettier form:
+
+\begin{figure}[!hp!]
+    \centering
+    \includegraphics[width=\linewidth]{contour.png}
+    \caption{Pressure Drop (left) and Pipe Length (right)}
+    \label{fig:pipelength}
+\end{figure}
 
 \section{Question 6}
 find expression relating q'',q', and q'''. 
