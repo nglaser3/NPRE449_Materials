@@ -1,0 +1,63 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{pythonhighlight}
+
+\begin{document}
+\newcommand{\pd}[3]{\frac{\partial^{#3}#1}{\partial {#2}^{#3}}}
+Homogenous Equilibrium model\\
+Assumptions:
+\begin{itemize}
+    \item $v_g = v_f = v$
+    \item $P_f = P_g = P$
+    \item $T_f = T_f = T_sat$, thus $T_sat(P)$ (cannot capture nucleate boiling region)
+    \item Uniform across the channel
+    \item All properties are at saturation
+\end{itemize}
+Mass balance:
+\begin{equation}
+    \pd{\rho_m}{t}{} + \pd{\rho_m v}{z}{} = 0
+\end{equation}
+where $\rho_m$ is mixture density, typically defined as:
+\begin{equation}
+    \rho_m = \rho_g\alpha + \rho_f(1-\alpha)
+\end{equation}
+or
+\begin{equation}
+    \rho_m = \biggr[V_g\chi + V_f(1-\chi)\biggr]^{-1}
+\end{equation}
+or \begin{equation}
+    \rho_m = \biggr[ V_f + V_{fg}\chi \biggr]^{-1}
+\end{equation}
+
+
+Momentum
+\begin{equation}
+    \pd{\rho_mv}{t}{} + \pd{}{z}{}\frac{G^2}{\rho_m}= -\pd{P}{z}{} -\frac{\tau_f\xi_w}{A_f} - \rho_m g \sin\theta
+\end{equation}
+such that:
+\begin{equation}
+    \tau_f = \frac{1}{2}f_{2\phi}\frac{G^2}{\rho_m}
+\end{equation}
+\begin{equation}
+    f_{2\phi} = f_{1\phi}\biggr[ \frac{\mu_m}{\mu_f}\biggr]^n
+\end{equation}
+\begin{equation}
+    \mu_m = \biggr[ \frac{\chi}{\mu_g} + \frac{1-\chi}{\mu_f}\biggr]
+\end{equation}
+
+
+Energy
+\begin{equation}
+    \pd{\rho_mh}{t}{} + \pd{Gh}{z}{} = \frac{q''\xi_h}{A_f} + \frac{P}{t}+q'''
+\end{equation}
+
+\begin{equation}
+    h = \chi_eh_g  + (1-\chi_e)h_f
+\end{equation}
+\begin{equation}
+    h = h_f + h_{fg}\chi_e
+\end{equation}
+
+\end{document}
