@@ -19,7 +19,6 @@ class Properties:
         self.mu = props.my_pt(_p0,_tf0)  # N s / m2
         self.k = props.tc_pt(_p0,_tf0)  #
         self.rho = props.rho_pt(_p0,_tf0)
-
         self.X_e0 = self.cp*(_tf0 - self.tsat(_p0)) / self.hfg(_p0)
         
         self.Area = (Geometry.Pitch**2 - 1/4 * np.pi * Geometry.Drod**2)
@@ -35,7 +34,7 @@ class Properties:
         def fit(x, A,B,C,D,E,F,G,H):
             return A + B*x + C*x**2 + D * x**3 + E* x**4 + F*x**5 + G*x**6 + H*x**7
 
-        self.__pressures = np.linspace(1,20,1000)
+        self.__pressures = np.linspace(1,20,10000)
         _hf = [self.hf(_p) for _p in self.__pressures]
         _hfg = [self.hfg(_p) for _p in self.__pressures]
         self.hf_fit = np.polynomial.Polynomial(scp.optimize.curve_fit(fit,self.__pressures*1e6,_hf)[0]) 
@@ -50,19 +49,19 @@ class Properties:
             print(f'fit: {self.hfg_fit}')
             hfg = [self.hfg(_p) for _p in self.__pressures]
             plt.plot(self.__pressures,hfg,label = 'Real Data')
-            plt.plot(self.__pressures,self.hfg_fit(self.__pressures),label = 'Data Fit')
-            
+            plt.plot(self.__pressures,self.hfg_fit(self.__pressures*1e6),label = 'Data Fit')
+            norm = scp.linalg.norm(self.hfg_fit(self.__pressures*1e6) - hfg,2) / scp.linalg.norm(hfg,2)
         elif fit =='hf':
             print(f'fit: {self.hf_fit}')
             hf = [self.hf(_p) for _p in self.__pressures]
             plt.plot(self.__pressures,hf, label = 'Real Data')
-            plt.plot(self.__pressures,self.hf_fit(self.__pressures), label = 'Data Fit')
-
+            plt.plot(self.__pressures,self.hf_fit(self.__pressures*1e6), label = 'Data Fit')
+            norm = scp.linalg.norm(self.hf_fit(self.__pressures*1e6) - hf,2) / scp.linalg.norm(hf,2)
         plt.legend()
         plt.grid()
         plt.xlabel('Pressure  [MPa]')
-        plt.ylabel(f'{fit}  []')
-
+        plt.ylabel(f'{fit}  [ J kg$^{{-1}}$]')
+        print(f'L2 Norm of Fit: {norm}')
 
 class Geometry:
     
