@@ -2,6 +2,7 @@
 \usepackage{amsmath}
 \usepackage{array}
 \usepackage{booktabs}
+\usepackage{pythonhighlight}
 
 \begin{document}
 \begin{table}[!h!]
@@ -183,4 +184,133 @@ Clad BCs:
     \item $T_c(r=R_{c,o},z) = T_{c,o}(z)$
 \end{enumerate}
 
+For fuel:
+
+\begin{subequations}
+    \begin{equation}
+        k\nabla^2T = -q'''
+    \end{equation}
+    \begin{equation}
+        \frac{1}{r}\pd{}{r}{}r\pd{T}{r}{} = -\frac{q'''}{k}
+    \end{equation}
+    \begin{equation}
+        \pd{T}{r}{} = -\frac{q'''}{2k}r + \frac{C_1}{r}
+    \end{equation}
+    \begin{equation}
+        T(r,z) = -\frac{q'''}{4k}r^2 + C_1\ln{r} + C_2(z)
+    \end{equation}
+    \begin{equation}
+        T(r,z) = -\frac{q_0'\cos{\frac{\pi z}{h_e}}}{4kA_{fuel}}r^2 + C_1\ln{r} + C_2(z)
+    \end{equation}
+\end{subequations}
+
+BCS:
+\begin{enumerate}
+    \item $T_{f}(z)= T_{f,o}(z)$
+    \item Finite, $C_1 = 0$
+\end{enumerate}
+
+
+
+\section{Computer Project}
+
+\begin{subequations}
+    \begin{equation}
+        A_F = Pitch^2 - \frac{\pi D_{rod}^2}{4}
+    \end{equation}
+    \begin{equation}
+        D_h = \frac{4A_f}{\xi_w}
+    \end{equation}  
+\end{subequations}
+\begin{enumerate}
+    \item In pin:
+    \begin{subequations}
+        \begin{equation}
+            k\nabla^2T + q''' = \rho c_p \pd{T}{t}{}
+        \end{equation}
+    \end{subequations}
+    \item HT at fluid boundary
+    \begin{subequations}
+        \begin{equation}
+            if\ Tw\ \leq\ T_sat:\: q'' = h(T_w - T_f),\: Dittus-Boelter
+        \end{equation}
+        \begin{equation}
+            else:\: q'' =\left[ \{Fh_{fc}(T_w - T_f)v^2\} + \{ Sh_{nb}(T_w-T_{sat})\}^2\right]^{\frac{1}{2}}
+        \end{equation}
+        \begin{equation}
+            F = \left[ 1+ \chi Pr_f (\frac{\rho_f}{\rho_g}- 1)\right]^{0.35}
+        \end{equation}
+        \begin{equation}
+            S = (1 + 0.055F^{0.1}Re_f^{0.16})^{-1}
+        \end{equation}
+        \begin{equation}
+            h_{fc} = 0.023\frac{k_f}{D_h}Re_f^{0.8}Pr_f^{0.4}
+        \end{equation}
+        \begin{equation}
+            h_{nb} = 55 (\frac{P}{P_c})^{0.12}q''^{2/3}\left(-\log{\frac{P}{P_c}}\right)^{-.55} M_w^{-0.5}
+        \end{equation}
+        \begin{equation}
+            Re_f = \frac{GD_h}{\mu_f}
+        \end{equation}
+    \end{subequations}
+    \item if $T_f \leq T_{sat}$ then single-phase $\chi=0$, else two phase need to find $\chi$
+    \item Fluid governing equations
+    \begin{subequations}
+        \begin{equation}
+            \pd{G}{z}{} = 0
+        \end{equation}
+        \begin{equation}
+            -\pd{P}{z}{} = G^2\pd{}{z}{}\frac{1}{\rho}+\frac{fG^2\xi_w}{2\rho A_f}+\rho g
+        \end{equation}
+        \begin{equation}
+            f = 0.316 Re_f^{-1/4}
+        \end{equation}
+        \begin{equation}
+            \pd{h}{z}{} = \frac{q''\xi_h}{GA_f}
+        \end{equation}
+        \begin{equation}
+            \chi_e = \frac{h-h_{f,sat}}{h_{g,sat} - h_{f,sat}}
+        \end{equation}
+        \begin{equation}
+            h = h_{fg}\chi_e + h_{f,sat}
+        \end{equation}
+        \begin{equation}
+            \pd{h}{z}{} = \chi_e\pd{h_{fg,sat}}{z}{} + \pd{h_{f,sat}}{z}{} + h_{fg}\pd{\chi_e}{z}{}
+        \end{equation}
+        \begin{equation}
+            \pd{h}{z}{} = \chi_e\pd{h_{fg,sat}}{P}{}\pd{P}{z}{}+ \pd{h_{f,sat}}{P}{}\pd{P}{z}{} + h_{fg}\pd{\chi_e}{z}{}
+        \end{equation}
+        \begin{equation}
+            \pd{\chi_e}{z}{} = \frac{1}{h_{fg}}\left[ \frac{q''\xi_h}{A_f} 
+            - \left( \chi_e\pd{h_{fg,sat}}{P}{}+ \pd{h_{f,sat}}{P}{}\right)\pd{P}{z}{}\right]
+        \end{equation}
+        \begin{equation}
+            \chi_e = \frac{c_p(T_f - T_{sat})}{h_{fg}}
+        \end{equation}
+        \begin{equation}
+            T_f = \frac{h_{fg,sat}}{c_p}\chi_e + T_{sat}
+        \end{equation}
+    \end{subequations}
+\end{enumerate}
+
+\subsection{Code Structure}
+\begin{python}
+    option = 1 or 2
+    if option == 1:
+        PWR inputs
+    if option == 2:
+        BWR inputs
+
+    iterate and solve
+    
+\end{python}
+
+\begin{equation}
+    \pd{P}{z}{} = \frac{P^{i+1} - P^i}{\Delta z}
+\end{equation}
+\begin{equation}
+    \pd{\chi_e}{z}{} = \frac{\chi_e^{i+1} - \chi_e^i}{\Delta z}
+\end{equation}
+
+solve for $\varphi^{i+1}$, given initial condition
 \end{document}

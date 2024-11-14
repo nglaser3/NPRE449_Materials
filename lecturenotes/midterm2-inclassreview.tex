@@ -1,0 +1,153 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{pythonhighlight}
+
+\begin{document}
+
+\newcommand{\pd}[3]{\frac{\partial^{#3}#1}{\partial#2^{#3}}}
+
+\section{Review}
+\newcommand{\mass}{\pd{\rho}{t}{} + \nabla\cdot\rho\Vec{v} = 0}
+\newcommand{\momentum}{\pd{\rho\Vec{v}}{t}{} + \nabla \cdot \rho\Vec{v}\Vec{v}=-\nabla P + \nabla \cdot \tau+\rho \Vec{g}}
+\newcommand{\energy}{\pd{\rho u}{t}{} + \nabla\cdot\rho\Vec{v}u 
+        =
+        -\nabla\cdot q'' - P\nabla\cdot\Vec{v} + \tau\mathbf{:}\nabla\Vec{v}+q'''}
+
+        
+\begin{enumerate}
+    \item Heat Conduction
+    \item Convection (Fluids + H.T.)
+    \item Quizzes
+\end{enumerate}
+
+\section{Heat Conduction}
+Expected to know:
+\begin{enumerate}
+    \item Fourier's Law
+    \item Thermal Conductivity (nuclear materials)
+    \item General heat diffusion equation (Laplacians are given)
+    \begin{equation}
+        \nabla k \nabla T + q''' = \rho c_p \pd{T}{t}{}
+    \end{equation}
+    \begin{itemize}
+        \item Derivation 
+        \item Simplification
+        \item General solution
+        \item Boundary conditions
+        \item Exact solution and applications
+    \end{itemize}
+    \item Treatment of gap region (Treat as own region with Fourier's law vs gap conductance model)
+\end{enumerate}
+
+\section{Convection}
+
+\begin{enumerate}
+    \item Dimensionless groups (Re, Pr, Nu, Pe, ...), Dittus-Boelter 
+    \item Fluid conservation equations
+    \begin{itemize}
+        \item Local-instant (terms and variables), closure relations 
+        \begin{subequations}
+        \begin{equation}
+            \mass
+        \end{equation}
+        \begin{equation}
+            \momentum
+        \end{equation}
+        \begin{equation}
+            \energy
+        \end{equation}
+        \end{subequations}
+        \item Time averaged (general approach), how did we get from full to RANS? impact the time averaging has on the equations? Additional closure relations. 
+        \item Area Averaged, 1-D. Simplfiying, solve for ($T_f(z), P(z),T_w(z)$)
+        \begin{subequations}
+            \begin{equation}
+                \pd{\rho}{t}{} + \pd{\rho v}{z}{} = 0
+                \label{mass}
+            \end{equation}
+            \begin{equation}
+                \pd{\rho v}{t}{} + \pd{}{z}{}\rho v^2 = -\pd{P}{z}{}-\tau_F\frac{\xi_w}{A_f} - \rho g \sin(\theta)
+                \label{momentum}
+            \end{equation}
+            \begin{equation}
+                \pd{\rho h}{t}{} + \pd{}{z}{}\rho v h = \frac{q''\xi_h}{A}+\pd{P}{t}{} + q'''
+                \label{energy}
+            \end{equation}
+        \end{subequations}
+    \end{itemize}
+    \item Recap of convection
+    \begin{itemize}
+        \item Newtons Law of cooling
+        \item impacts on h, (laminar vs turbulent, Developing vs FD, Geometry, Pr, ...)
+    \end{itemize}
+    \item Combined conduction and convection, get conduction with z dependence
+\end{enumerate}
+
+\section{Quizzes}
+Material derivative of density must be 0 to be incompressible\\
+Total derivative of velocity is fluid acceleration\\
+Break down of accelerational pressure drop  in 1D momentum\\
+Impact of Prandtl number on temperature distribution
+
+
+\section{Term names}
+
+\subsection{Local-Instant}
+\begin{table}[!hp!]
+    \centering
+    \renewcommand{\arraystretch}{1.5}
+    \begin{tabular}{|c|c|}
+        \hline
+        Term & Definition\\
+        \toprule
+        \bottomrule
+        $\pd{\rho}{t}{}$ & Time rate of change of density  \\
+        $\nabla \cdot \rho \Vec{v}$ & Convection of mass per unit volume \\
+        $\pd{\rho\Vec{v}}{t}{}$ & Time rate of change of momentum per unit volume \\
+        $\nabla \cdot \rho \Vec{v}\Vec{v}$ & Convection of momentum \\
+        $\nabla P$ & Pressure Force \\
+        $\nabla \cdot \tau$ & Viscous force \\
+        $\rho \Vec{g}$ & Body force \\
+        $\pd{\rho u}{t}{}$ & Time rate of change of internal energy \\
+        $\nabla \cdot \rho \Vec{v}u$ & Convection of internal energy\\
+        $\nabla \cdot q''$ & heat transfer rate\\
+        $ P\nabla\cdot\Vec{v}$ & Pressure work \\
+        $ \tau : \nabla\Vec{v}$ & viscous heating \\
+        $q'''$ & Heat generation\\
+        \hline
+    \end{tabular}
+\end{table}
+
+\subsection{Pressure Drop}
+\begin{table}[!hp!]
+    \centering
+    \renewcommand{\arraystretch}{1.5}
+    \begin{tabular}{|c|c|}
+        \hline
+        Term & Definition \\
+        \toprule
+        \bottomrule
+        $G^2\pd{}{z}{}\frac{1}{\rho}$ & Acceleration Pressure Drop  \\
+        $\frac{\tau_f\xi_w}{A_f}$ & Frictional Pressure Drop \\
+        $ \rho g \sin(\theta)$ & Gravitational Pressure Drop\\
+        \hline
+    \end{tabular}
+\end{table}
+\begin{table}[!hp!]
+    \centering
+    \renewcommand{\arraystretch}{1.5}
+    \begin{tabular}{|c|c|c|}
+        \hline
+         Dimensionless Group & Equation & Definition \\
+         \toprule
+         \bottomrule
+         Reynolds & $\frac{GL_c}{\mu}$ & Inertial over viscous forces \\
+         Prandtl & $\frac{c_p\mu}{k}$& Momentum Diffusivity over thermal diffusivity\\ 
+         Nusselt & $\frac{hL_c}{k}$ & convection HT to conduction HT \\
+         Peclet & $\frac{GL_cc_p}{k}$ & Advection rates over heat transfer rates\\
+         Dittus-Boelter & $CRe^nPr^m$ & correlation to find h\\
+         \hline
+    \end{tabular}
+\end{table}
+\end{document}
