@@ -53,9 +53,15 @@ class PinProperties:
 
         
         self.xih = self.Drod * np.pi #m
-        
+        self.SAf = self.DFuel *np.pi * self.H
+        self.SAc = (self.DFuel + self.Gap_thickness) * np.pi * self.H
+        self.Axsf = self.DFuel ** 2 / 4 * np.pi
+        self.Rf = self.DFuel/2
+        self.Rci = self.Rf + self.Gap_thickness
+        self.Rco = self.Drod / 2 
         self.qp = lambda z: Conditions.qp0* np.sin(np.pi * z / self.H) #W/m
         self.qpp = lambda z: self.qp(z) / self.xih # w /m2
+        self.q3p = lambda z: self.qp(z) / self.Axsf
         
         return
 
@@ -117,17 +123,17 @@ class FluidProperties:
         --------------------
         '''
         self.rhosatratio = lambda P: props.rhoV_p(P) / props.rhoL_p(P)
-        self.alpha = lambda Xe, P: 1 / (1 + (Xe**(-1) - 1) * self.rhosatratio(P))
+        self.alpha = lambda Xe: 1 / (1 + (Xe**(-1) - 1) * self.rhosatratio(_p0))
         self.rhofg = props.rhoL_p(_p0) - props.rhoV_p(_p0)
         self.rhoL = props.rhoL_p(_p0)
         self.rhoV = props.rhoV_p(_p0)
         self.rhom = lambda Xe, P: self.rhoL if Xe<0 else (1/self.rhoL + 1/self.rhofg*Xe)**(-1)
             #for props.my_pt, for whatever reason pyXSteam doesnt have mu at saturation
             #so you have to alter tsat a littlebit
-        self.__muL = lambda P: props.my_ph(P, props.hL_p(P))
+        self.muL = lambda P: props.my_ph(P, props.hL_p(P))
         self.__muV = lambda P: props.my_ph(P, props.hV_p(P))
-        self.mum = lambda Xe, P: self.mu if Xe <0 else (Xe / self.__muV(P) + (1 - Xe)/self.__muL(P))**(-1)
-        self.f = lambda Xe, P: self.__f if Xe <0 else self.__f* (self.mum(Xe, P) / self.__muL(P))
+        self.mum = lambda Xe, P: self.mu if Xe <0 else (Xe / self.__muV(P) + (1 - Xe)/self.muL(P))**(-1)
+        self.f = lambda Xe, P: self.__f if Xe <0 else self.__f* (self.mum(Xe, P) / self.muL(P))
 
 
         '''
@@ -158,15 +164,15 @@ class FluidProperties:
         hf_norm = norm(hf_fit - hfdata,2) / norm(hfdata,2)
         hg_norm = norm(hg_fit - hgdata,2) / norm(hgdata,2)
         
-        fig,ax = plt.subplot_mosaic([['h_f','h_fg']],figsize = (12,5),gridspec_kw={'wspace':.2})
+        fig,ax = plt.subplot_mosaic([['h_f','h_g']],figsize = (12,5),gridspec_kw={'wspace':.2})
         
         ax['h_f'].plot(p, hfdata, label = 'pyXSteam Data')
         ax['h_f'].plot(p, hf_fit, label = 'h$_f$ Polynomial Fit')
         ax['h_f'].set_ylabel('h$_f$  [J $\cdot$ kg$^{-1}$]')
 
-        ax['h_fg'].plot(p, hgdata, label = 'pyXSteam Data')
-        ax['h_fg'].plot(p, hg_fit, label= 'h$_{fg}$ Polynomial Fit')
-        ax['h_fg'].set_ylabel('h$_{fg}$  [J $\cdot$ kg$^{-1}$]')
+        ax['h_g'].plot(p, hgdata, label = 'pyXSteam Data')
+        ax['h_g'].plot(p, hg_fit, label= 'h$_{g}$ Polynomial Fit')
+        ax['h_g'].set_ylabel('h$_{g}$  [J $\cdot$ kg$^{-1}$]')
 
         for plot in ax:
             ax[plot].set_xlabel('Pressure  [MPa]')
@@ -174,6 +180,7 @@ class FluidProperties:
             ax[plot].legend()
 
         print(f'hf Fit L2 Norm: {hf_norm}\nhg Fit L2 Norm: {hg_norm}')
+        
         
         return 
         
@@ -183,7 +190,12 @@ SOLVER
 class Solver:
     
     def __init__(self,which = 'PWR',num_zsteps = 100):
-    
+        try:
+            assert(which in ['PWR','BWR'])
+        except AssertionError:
+            errormessage = f"The reactor type '{which}' is not supported. Valid reactor types are: 'BWR' or 'PWR'"
+            raise Exception(errormessage)
+        self.which = which
         self.ICs = Conditions(which=which)
         self.pin = PinProperties(which=which,Conditions=self.ICs)
         self.fluid = FluidProperties(self.ICs,self.pin)
@@ -191,27 +203,6 @@ class Solver:
         
         return
 
-    def plotSolutions(self):
-
-        self.fluid.plot()
-        plt.show()
-        
-        fig,ax = plt.subplots()
-        ax.plot(self.XeFunc(self.z), self.z)
-        ax.set_xlabel('Equilibrium Steam Quality')
-        ax.set_ylabel('Axial Position  [m]')
-        ax.grid()
-        plt.show()
-
-        fig, ax = plt.subplots()
-        ax.plot(self.TfFunc(self.z),self.z, label = 'Mean Fluid Temperature')
-        tsat = [self.fluid.tsat(p * 1e-6) for p in self.PFunc(self.z)]
-        ax.plot(tsat,self.z, label = 'Saturation Temperature')
-        ax.set_xlabel('Temperature  [K]')
-        ax.set_ylabel('Axial Position  [m]')
-        ax.legend()
-        ax.grid()
-        plt.show()
 
     def solveFluid(self,output = True):
         
@@ -232,8 +223,6 @@ class Solver:
             Solving for Pressure
             Solve for pressure using the material properties at the previous z
             '''
-            #helperP = (fluid.f(X_e[i-1],P[i-1]*1e-6)* ICs.G**2* fluid.xiw)/ (2* fluid.rhom(X_e[i-1],P[i-1]*1e-6)* fluid.Area)
-            #P_i = -dz * (helperP  + fluid.rhom(X_e[i-1],P[i-1]*1e-6)* ICs.g) + P[i-1]
             rhom = fluid.rhom(X_e[i-1],P[i-1]*1e-6)
             topP1 = 1/2 * fluid.xiw / fluid.Area * fluid.f(X_e[i-1],P[i-1]*1e-6) * ICs.G**2 / rhom
             topP2 = rhom * ICs.g
@@ -256,7 +245,7 @@ class Solver:
             Solving for Temperature
             Find temperature with current properties
             '''
-            T_f_i = fluid.hfg(P_i*1e-6) / fluid.cp * X_e_i + fluid.tsat(P_i*1e-6)
+            T_f_i = fluid.hfg(P_i*1e-6) / fluid.cp * X_e_i + fluid.tsat(P_i*1e-6) if X_e_i < 0 else fluid.tsat(P_i*1e-6)
 
             '''
             Printing
@@ -273,50 +262,297 @@ class Solver:
             T_f.append(T_f_i)
             
         
-        self.PFunc = scp.interpolate.interp1d(z,P)
+        self.PFunc = scp.interpolate.interp1d(z,np.array(P)*1e-6)
         self.XeFunc = scp.interpolate.interp1d(z,X_e)
-        self.TfFunc = scp.interpolate.interp1d(z,T_f)
+        self.TFluidFunc = scp.interpolate.interp1d(z,T_f)
         
         return
 
 
-    def solveCladSurface(self):
+    def __solveCladSurface(self):
 
-        T_cs = lambda z: self.__pin.qpp(z) / self.__fluid.h + self.TfluidFunc(z)
+        ICs,pin, fluid = self.ICs, self.pin, self.fluid
 
-        rho_ratio = lambda z: self.__fluid.props.rhoL_p(self.Pfunc(z)*1e-6) / self.__fluid.props.rhoV_p(self.Pfunc(z)*1e-6)
+        Pc = 22.06
+        M = 18.01528
+        F = lambda Xe,P: 1 if Xe < 0 else (1 + Xe * fluid.Pr * (fluid.rhosatratio(P) - 1)) ** (0.35)
+        S = lambda Xe,z: (1 + 0.055 * F(Xe,self.PFunc(z)) ** (0.1) * (ICs.G * fluid.Dh / fluid.muL(ICs.P0/1e6))**(0.16)) ** (-1)
+        hnb = lambda z: 55 * (self.PFunc(z) / Pc) ** (0.12) * pin.qpp(z)**(2/3) * (-np.log(self.PFunc(z)/Pc)) * M**(-0.5)
+        def twophase(Tw,z,Xe):
+            fpart = (F(Xe,self.PFunc(z)) * fluid.h * (Tw - self.TFluidFunc(z)))**2
+            spart = (S(Xe,z) * hnb(z) *(Tw - fluid.tsat(self.PFunc(z))))**2
+            return pin.qpp(z) - (fpart + spart) **(.5)
+        def onephase(z):
+            return pin.qpp(z) / fluid.h + self.TFluidFunc(z)
 
-        F = lambda z: (1+self.Xefunc(z)  * self.__fluid.Pr *(rho_ratio(z) - 1))**(.35)
-        S = lambda z: 1 / (1 + 0.055 * F(z)**(.1) * self.__fluid.Re**(.16))
+        T_cs = []
+        guess = fluid.tsat(ICs.P0/1e6) *1.5
+        for i,z in enumerate(self.z):
+            X_e_i = self.XeFunc(z)
+            tempGuess = onephase(z)
+            if tempGuess < fluid.tsat(self.PFunc(z)):
+                T_cs.append(tempGuess)
+            else:
+                try:
+                    _ = self.ONB * 3
+                except:
+                    self.ONB = z
+                func = lambda Tw: twophase(Tw,z,X_e_i)
+                root = scp.optimize.root(func,guess).x[0]
+                T_cs.append(root)
 
-        self.T_cs = T_cs
-
+        try:
+            self.SatBoil = scp.optimize.root(self.XeFunc, pin.H/3).x[0]
+        except ValueError:
+            pass
+        self.TCladS = scp.interpolate.interp1d(self.z,T_cs)
         return
+            
 
     def solvePinTemperature(self):
-    
-        pin = self.__pin
-        fluid = self.__fluid
-        Rf = pin.DFuel /2
-        Rci = pin.DFuel /2 + pin.Gap_thickness
-        Rco = pin.Drod / 2
-        Aci = 2*Rci * np.pi
-        Af = 2*Rf * np.pi
-        Axf = Rf**2 * np.pi
+
+        self.__solveCladSurface()
+        ICs,pin, fluid = self.ICs, self.pin, self.fluid
+
+        C3 = lambda z: -pin.q3p(z)*pin.Rf**2 / 2 / pin.kgap
+        C5 = lambda z: pin.kgap / pin.k_cladding * C3(z)
+        C6 = lambda z: self.TCladS(z) - C5(z)*np.log(pin.Rco)
+        C4 = lambda z: C5(z)* np.log(pin.Rci) - C3(z)* np.log(pin.Rci) + C6(z)
+        C2 = lambda z: pin.q3p(z) * pin.Rf**2 / 4 / pin.k_fuel + C3(z) * np.log(pin.Rf) + C4(z)
+
+        self.TFuelFunc = lambda r, z: -pin.q3p(z) * r**2 / 4 / pin.k_fuel + C2(z)
+        self.TGapFunc = lambda r, z: C3(z) * np.log(r) + C4(z)
+        self.TCladFunc = lambda r, z: C5(z) * np.log(r) + C6(z)
         
-        C2 = lambda z: pin.qp(z) * Rf * Rci * Af/ pin.k_cladding / Aci / Axf
-        C3 = lambda z: self.T_cs(z) - C2(z)*np.log(Rco)
-        T_clad = lambda r,z: C2(z)*np.log(r) + C3(z)
-
-        C1 = lambda z: (pin.qpp(z) + fluid.h * Aci * T_clad(Rci,z) ) / fluid.h / Af  -  pin.qp(z)*Rf**2 / (4 * Axf * pin.k_fuel)
-        T_fuel = lambda r, z: -pin.qp(z) * r**2 / 4 / pin.k_fuel / Axf + C1(z)
-
-        self.T_clad = T_clad
-        self.T_fuel = T_fuel
         return
         
 
+class Plotter:
+    
+    def __init__(self, which = 'PWR', ideal_steps = 1000, show = False):
 
+        self.zsteps = ideal_steps
+        solver = Solver(which=which,num_zsteps=self.zsteps)
+        solver.solveFluid(output=False)
+        solver.solvePinTemperature()
+        self.solution = solver
+        try:
+            assert(which in ['PWR','BWR'])
+        except AssertionError:
+            errormessage = f"The reactor type '{which}' is not supported. Valid reactor types are: 'BWR' or 'PWR'"
+            raise Exception(errormessage)
+        self.__MESH(which,show)
+        self.__BOTH(show)
+        if which == 'BWR':
+            self.__BWR(show)
+        self.__SENSITIVITY(which)
+        return
+    def __finisher(self, ax, xlabel='t',legend=0,loc=None):
+        xlabel = 'Temperature  [K]' if xlabel == 't' else 'Pressure  [MPa]'
+        ax.grid()
+        if legend:
+            ax.legend(loc = loc)
+        ax.set_xlabel(xlabel)
+        ax.set_ylabel('Axial Position  [m]')
+    def __radfinisher(self, ax):
+        ax.grid()
+        ax.legend()
+        ax.set_xlabel('Radial Position  [m]')
+        ax.set_ylabel('Temperature  [K]')
+
+    @staticmethod
+    def __show(show):
+        if show:
+            plt.show()
+        else:
+            plt.close()
+        
+    @staticmethod   
+    def __latex(arr, name):
+        component = f'{name} & '
+        maxcl = 'T_{max,CL}  [$K$] & '
+        for comp, tcl in arr:
+            component += str(comp) + ' & '
+            maxcl += str(np.around(tcl,3)) + ' & '
+
+        print('\\toprule\n\\bottomrule')
+        print(component[:-2]+'\\\\')
+        print('\hline')
+        print(maxcl[:-2]+'\\\\')
+        
+        return
+
+
+    def __MESH(self, which,show =False):
+        fig, ax = plt.subplots()
+        for n in [2,3,5,10,100, 1000]:
+            solve = Solver(which,n)
+            solve.solveFluid(output=False)
+            ax.plot(solve.TFluidFunc(solve.z), solve.z, label = f'{n} Nodes')
+        self.__finisher(ax,legend=1)
+        self.__show(show)
+        return
+
+    def __BOTH(self, show = False):
+
+        solution = self.solution
+        z = solution.z
+
+        TFluid = solution.TFluidFunc(z)
+        TCladSO = solution.TCladS(z)
+        TCladSI = solution.TCladFunc(solution.pin.Rci,z)
+        TFuelS = solution.TFuelFunc(solution.pin.Rf,z)
+        TFuelCL = solution.TFuelFunc(0,z)
+
+        print('\tMaximum Temperatures')
+        print('------------------------------------')
+        print(f'Fuel: {max(TFuelCL)}\nClad: {max(TCladSI)}\nFluid: {max(TFluid)}')
+        zmaxCL = z[np.where(TFuelCL == max(TFuelCL))[0][0]]
+        Pressure = solution.PFunc(z)
+        TSat = [solution.fluid.tsat(p) for p in Pressure]
+
+        '''Temperatures'''
+        fig, ax = plt.subplots()
+        ax.plot(TFluid,z, label = 'Fluid Temperature')
+        ax.plot(TSat, z, label = 'Saturation Temperature', color = 'k', linestyle = '--')
+        self.__finisher(ax,legend=1)
+        self.__show(show)
+
+        fig, ax = plt.subplots()
+        ax.plot(TCladSO,z,label = 'Clad Outer Surface')
+        ax.plot(TCladSI,z , label = 'Clad Inner Surface')
+        #ax.plot(TSat, z, label = 'Saturation Temperature', color = 'k', linestyle = '--')
+        try:
+            ax.axhline(solution.ONB,color = 'k', linestyle = '--',label = 'Onset of Nucleate Boiling')
+        except: 
+            pass
+        try:
+            ax.axhline(solution.SatBoil,color = 'r',linestyle = '--',label = 'Saturated Boiling')
+        except:
+            pass
+        self.__finisher(ax, legend=1,loc='upper right')
+        self.__show(show)
+
+        fig, ax = plt.subplots()
+        ax.plot(TFuelS, z, label = 'Fuel Surface')
+        ax.plot(TFuelCL, z, label = 'Fuel Centerline')
+        ax.axhline(zmaxCL,linestyle = '--', color = 'k', label = 'Z$_{max,CL}$ at ' + f'{np.around(zmaxCL,3)} m')
+        self.__finisher(ax, legend=1)
+        self.__show(show)
+
+        '''Pressure'''
+        fig, ax = plt.subplots()
+        ax.plot(Pressure, z)
+        self.__finisher(ax, 'p')
+        self.__show(show)
+
+        TFuel = solution.TFuelFunc
+        TClad = solution.TCladFunc
+        Rc = np.linspace(solution.pin.Rci,solution.pin.Rco,1000)
+        Rf = np.linspace(0,solution.pin.Rf,1000)
+        zlocs = [solution.pin.H/2,solution.pin.H/4,zmaxCL]
+
+        for z in zlocs:
+            fig, ax = plt.subplots()
+            ax.plot(Rc,TClad(Rc,z), label = 'Clad Temperature')
+            ax.plot(Rf,TFuel(Rf,z), label = 'Fuel Temperature')
+            self.__radfinisher(ax)
+            self.__show(show)
+
+        
+        return
+
+    def __SENSITIVITY(self, which):
+        percent = np.array([ .5, .75, 1, 1.25, 1.5])
+        _qp0 = percent * self.solution.ICs.qp0
+        _G = percent * self.solution.ICs.G
+        percent = np.array([.5, .75, .9, 1, 1.1])
+        _tfin =  percent * self.solution.ICs.Tf0
+        _Pin = percent * self.solution.ICs.P0
+
+        qpsens = []
+        for qp0 in _qp0:
+            solve = Solver(which)
+            solve.ICs.qp0 = qp0
+            solve.solveFluid(False)
+            solve.solvePinTemperature()
+            maxTCL = max(solve.TFuelFunc(0, solve.z))
+            qpsens.append(tuple((qp0/1e2,maxTCL)))
+        
+        Gsens = []
+        for G in _G:
+            solve = Solver(which)
+            solve.ICs.G = G
+            solve.solveFluid(False)
+            solve.solvePinTemperature()
+            maxTCL = max(solve.TFuelFunc(0, solve.z))
+            Gsens.append(tuple((G,maxTCL)))
+
+        tf0sens = []
+        for TF0 in _tfin:
+            solve = Solver(which)
+            solve.ICs.Tf0 = TF0
+            solve.solveFluid(False)
+            solve.solvePinTemperature()
+            maxTCL = max(solve.TFuelFunc(0, solve.z))
+            tf0sens.append(tuple((TF0,maxTCL)))
+        
+        p0sens = []
+        for P0 in _Pin:
+            solve = Solver(which)
+            solve.ICs.P0 = P0
+            solve.solveFluid(False)
+            solve.solvePinTemperature()
+            maxTCL = max(solve.TFuelFunc(0, solve.z))
+            p0sens.append(tuple((P0/1e6,maxTCL)))
+
+        print('\n\n')
+        print('\t    Sensitivity')
+        print('-----------------------------------')
+        self.__latex(qpsens, r"q'_{0}  [$W\cdotcm^{-1}$]")
+        self.__latex(Gsens, r'G  [$kg\cdot m^{-2} \cdot s^{-1}$]')
+        self.__latex(tf0sens, r'T_{f,in}  [$K$]')
+        self.__latex(p0sens, r'P_{in}  [$MPa$]')
+        return
+    
+    def __BWR(self, show):
+        z = self.solution.z
+        Xe = self.solution.XeFunc(z)
+        P = self.solution.PFunc(z)
+        X = []
+        for xe in Xe:
+            x = 0 if xe <0 else xe
+            X.append(x)
+        X = np.array(X)
+        alpha = self.solution.fluid.alpha(X)
+        Rho = [self.solution.fluid.rhom(x,p) for x,p in zip(Xe,P)]
+
+        '''Density'''
+        fig, ax = plt.subplots()
+        ax.plot(Rho, z)
+        ax.set_xlabel('Density  [kg $\cdot$m$^{-3}$]')
+        ax.set_ylabel('Axial Position  [m]')
+        ax.grid()
+        plt.show()
+
+        '''X and Xe'''
+        fig, ax = plt.subplots()
+        ax.plot(Xe, z, label = 'Equilibrium Quality')
+        ax.plot(X, z, label = 'Steam Quality')
+        ax.set_ylabel('Axial Position  [m]')
+        ax.set_xlabel('Quality')
+        ax.legend()
+        ax.grid()
+        plt.show()
+
+        '''Void'''
+        fig, ax = plt.subplots()
+        ax.plot(alpha, z)
+        ax.set_ylabel('Axial Position  [m]')
+        ax.set_xlabel('Void Fraction')
+        ax.grid()
+        plt.show()
+        return
 
 
 
