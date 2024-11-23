@@ -57,7 +57,7 @@ class PinProperties:
         self.SAc = (self.DFuel + self.Gap_thickness) * np.pi * self.H
         self.Axsf = self.DFuel ** 2 / 4 * np.pi
         self.Rf = self.DFuel/2
-        self.Rci = self.Rf + self.Gap_thickness
+        self.Rci = self.Rf + self.Gap_thickness/2
         self.Rco = self.Drod / 2 
         self.qp = lambda z: Conditions.qp0* np.sin(np.pi * z / self.H) #W/m
         self.qpp = lambda z: self.qp(z) / self.xih # w /m2
@@ -227,7 +227,7 @@ class Solver:
             topP1 = 1/2 * fluid.xiw / fluid.Area * fluid.f(X_e[i-1],P[i-1]*1e-6) * ICs.G**2 / rhom
             topP2 = rhom * ICs.g
             topP3 = ICs.G * pin.qp(z[i]) / (fluid.rhofg * fluid.Area * fluid.hfg(P[i-1]*1e-6))
-            botP1 =  0 if X_e[i-1] < 0 else X_e[i-1] * fluid.dhgdp(P[i-1]) + (1-X_e[i-1]) * fluid.dhfdp(P[i-1])
+            botP1 =  fluid.dhfdp(P[i-1]) if X_e[i-1] < 0 else X_e[i-1] * fluid.dhgdp(P[i-1]) + (1-X_e[i-1]) * fluid.dhfdp(P[i-1])
             botP2 = 1 - ICs.G**2 / (fluid.rhofg * fluid.hfg(P[i-1]*1e-6)) * botP1
             insideP = (topP1 + topP2 + topP3) / botP2
             P_i = P[i-1] - dz *insideP
@@ -314,8 +314,8 @@ class Solver:
         self.__solveCladSurface()
         ICs,pin, fluid = self.ICs, self.pin, self.fluid
 
-        C3 = lambda z: -pin.q3p(z)*pin.Rf**2 / 2 / pin.kgap
-        C5 = lambda z: pin.kgap / pin.k_cladding * C3(z)
+        C3 = lambda z: -pin.q3p(z)*pin.Rf**2 / 2 / pin.kgap #yes
+        C5 = lambda z: pin.kgap / pin.k_cladding * C3(z) 
         C6 = lambda z: self.TCladS(z) - C5(z)*np.log(pin.Rco)
         C4 = lambda z: C5(z)* np.log(pin.Rci) - C3(z)* np.log(pin.Rci) + C6(z)
         C2 = lambda z: pin.q3p(z) * pin.Rf**2 / 4 / pin.k_fuel + C3(z) * np.log(pin.Rf) + C4(z)
