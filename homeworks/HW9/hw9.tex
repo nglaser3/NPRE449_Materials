@@ -1,0 +1,259 @@
+\documentclass{article}
+% Language setting
+% Replace `english' with e.g. `spanish' to change the document language
+\usepackage{biblatex} %Imports biblatex package
+\addbibresource{sample.bib}
+\usepackage{changepage}
+\usepackage[english]{babel}
+\usepackage{tikz}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{accents}
+\usepackage{empheq}
+\usepackage{pythonhighlight}
+\newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{M}[1]{>{\centering\arraybackslash}m{#1}}
+
+% Set page size and margins
+% Replace `letterpaper' with `a4paper' for UK/EU standard size
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+\usepackage{graphicx}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{setspace}
+\usepackage{booktabs}
+\usepackage[T1]{fontenc}
+\usepackage{longtable}
+\doublespacing
+
+\begin{document}
+\newcommand{\circled}[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+
+\newcommand{\pd}[3]{\frac{\partial^{#3}#1}{\partial {#2}^{#3}}}
+\begin{titlepage}
+
+\centering
+\scshape
+\vspace{\baselineskip}
+
+%
+\rule{\textwidth}{1.6pt}\vspace*{-\baselineskip}\vspace*{2pt}
+\rule{\textwidth}{0.4pt}
+
+{\Huge \textbf{\textsc{NPRE 449: Homework 8 \\
+\vspace{15pt}}}}
+
+\rule{\textwidth}{0.4pt}\vspace*{-\baselineskip}\vspace{3.2pt}
+\rule{\textwidth}{1.6pt}\vspace{6pt}
+%%\centerline{\textit{University of Illinois at Urbana-Champaign}} 
+\vspace{1.5\baselineskip}
+
+
+\large \centerline{\textbf{Author:} Nathan Glaser}
+\large \centerline{\textbf{Net-ID:} nglaser3}
+\quad
+
+\vfill
+\large \centerline{November 6, 2024}
+%
+\pagenumbering{gobble}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+\pagenumbering{arabic}
+
+\section{Derivation of Pin Temperature distribution}
+First for the fuel. 
+\begin{subequations}
+    \begin{equation}
+        \nabla k \nabla T_f + q''' = 0
+    \end{equation}
+    \begin{equation}
+        \nabla^2T_f =\frac{1}{r}\pd{}{r}{}r\pd{T_f}{r}{}= - \frac{q'''}{k}
+    \end{equation}
+    \begin{equation}
+        \pd{T_f}{r}{} = \frac{q''' r}{k_f} + C1\frac{1}{r}
+    \end{equation}
+    \begin{equation}
+        T_f = \frac{q''' r^2}{4k_f} + C1\ln{r}+ C_2
+    \end{equation}
+\end{subequations}
+Then for the gap.
+\begin{subequations}
+    \begin{equation}
+        \nabla k \nabla T_g = 0
+    \end{equation}
+    \begin{equation}
+        \pd{}{r}{}r\pd{T_g}{r}{} = 0
+    \end{equation}
+    \begin{equation}
+        T_g = C_3\ln r + C_4
+    \end{equation}
+\end{subequations}
+And finally for the clad.
+\begin{subequations}
+    \begin{equation}
+        \nabla k \nabla T_c = 0
+    \end{equation}
+    \begin{equation}
+        \pd{}{r}{}r\pd{T_c}{r}{} = 0
+    \end{equation}
+    \begin{equation}
+        T_c = C_5\ln r + C_6
+    \end{equation}
+\end{subequations}
+
+Next, our boundary conditions are:
+\begin{itemize}
+    \item[\circled{1}] $-k_f\nabla T_f (r = 0) = 0$
+    \item[\circled{2}] $-k_f\nabla T_f(r=R_{f}) = -k_g\nabla T_g(r=R_{f})$
+    \item[\circled{3}] $-k_g\nabla T_g(r=R_{c,i})=-k_c\nabla T_c(r=R_{c,i})$
+    \item[\circled{4}] $T_c(r= R_{c,s}) = T_{c,s}$
+    \item[\circled{5}] $T_g(r=R_{c,i}) = T_c(r=R_{c,i})$
+    \item[\circled{6}] $T_f(r=R_f) = T_g(r=R_f)$
+\end{itemize}
+
+First, we can apply \circled{1}, also known as finiteness. This BC implies that $C_1$ is 0. Next, we investigate \circled{2}. Plugging in the respective temperature distributions, we get:
+\begin{equation}
+    \frac{q'''R_f}{2} = -\frac{k_gC_3}{R_f}
+\end{equation}
+Thus, we find $C_3$ to be:
+\begin{equation}
+    \boxed{C_3 = \frac{-q'''R_f^2}{2k_g}}
+\end{equation}
+
+Next, applying BC \circled{3}, and inserting the respective temperature distributions:
+\begin{equation}
+    -\frac{k_gC_3}{R_{c,i}} = -\frac{k_cC_5}{R_{c,i}}
+\end{equation}
+and thus, 
+\begin{equation}
+    \boxed{C_5 = \frac{k_g}{k_c}C_3}
+\end{equation}
+
+Proximally, applying \circled{4}, and solving for $C_6$, we obtain
+\begin{equation}
+    \boxed{C_6 = T_{c,s} - C_5\ln{R_{c,s}}}
+\end{equation}
+
+Next, investigating \circled{5}, rearranging for $C_4$,
+\begin{equation}
+    \boxed{C_4 = C_5\ln{R_{c,i}} + C_6 - C_3\ln(R_{c,i})}
+\end{equation}
+
+Then, finally we can determine $C_2$. Inserting all known parameters into \circled{6}, and rearranging, we get:
+\begin{equation}
+    \boxed{C_2 = C_3\ln(R_f) + C_4 + \frac{q'''R_f^2}{4k_f}}
+\end{equation}
+
+Now with all of our coefficients solved for, we just need to find $T_{c,s}$.
+\section{Derivation of Fluid Temperature}
+To begin, the area-averaged mass, momentum, and energy equations:
+\begin{subequations}
+    \begin{equation}
+        \pd{\rho}{t}{} + \pd{\rho v}{z}{} = 0
+        \label{mass}
+    \end{equation}
+    \begin{equation}
+        \pd{\rho v}{t}{} + \pd{}{z}{}\rho v^2 = -\pd{P}{z}{}-\tau_F\frac{\xi_w}{A_f} - \rho g \sin(\theta)
+        \label{momentum}
+    \end{equation}
+    \begin{equation}
+        \pd{\rho h}{t}{} + \pd{}{z}{}\rho v h = \frac{q''\xi_h}{A}+\pd{P}{t}{} + q'''
+        \label{energy}
+    \end{equation}
+\end{subequations}
+
+First, looking at mass. This system is steady state, and $\rho v$ is also the mass-flux, G. Thus, the mass equation simplifies to:
+\begin{equation}
+    \pd{G}{z}{} = 0
+\end{equation}
+
+Next, the momentum equation is also steady-state, and again substituting in G for $\rho v$, we obtain
+\begin{equation}
+    -\pd{P}{z}{} = G^2\pd{}{z}{}\frac{1}{\rho} + \rho g + \tau_F\frac{\xi_w}{A_f}
+\end{equation}
+Then recognizing this as a potentially two-phase system, we substitute $\rho$ with $\rho_m$,
+\begin{equation}
+    -\pd{P}{z}{} = G^2\pd{}{z}{}\frac{1}{\rho_m} + \rho_m g + \frac{1}{2}f\frac{G^2\xi_w}{\rho_mA_f}
+\end{equation}
+such that
+\begin{equation}
+    \rho_m = \biggr[\frac{\chi}{\rho_g} + \frac{1-\chi}{\rho_f}\biggr]^{-1}
+\end{equation}
+
+Next, our energy equation. Again, steady state, $\rho_m v = G$, and also now no $q'''$ in the fluid.
+\begin{equation}
+    G\pd{}{z}{} h = \frac{q''\xi_h}{A}
+\end{equation}
+
+This is however not very helpful. Instead, we can write h in terms of the equilibrium quality, $X_e$. h in relation to $X_e$ is:
+\begin{equation}
+            h = h_{fg}\chi_e + h_{f,sat}
+\end{equation}
+Then the derivative of h is related to the derivative of $X_e$ by:
+\begin{equation}
+    \pd{h}{z}{} = \chi_e\pd{h_{fg,sat}}{z}{} + \pd{h_{f,sat}}{z}{} + h_{fg}\pd{\chi_e}{z}{}
+\end{equation}
+inserting this relation back into our energy equation, and solving for $\pd{\chi_e}{z}{}$, we obtain
+\begin{equation}
+    \pd{\chi_e}{z}{} = \frac{q''\xi_h}{A_fGh_{fg}} - \frac{1}{h_{fg}}\biggr[ \chi_e\pd{h_g}{z}{} + (1-\chi_e)\pd{h_f}{z}{}\biggr]
+\end{equation}
+
+now, because $\rho_m$ is dependent on $\chi$, we must expand the derivative of $\rho_m$ out with $\chi_e$. Substituting in $\biggr[\frac{\chi}{\rho_g} + \frac{1-\chi}{\rho_f}\biggr]^{-1}$ for $\rho_m$, then differentiating with respect to z, and substituting into our momentum equation:
+
+\begin{equation}
+    -\pd{P}{z}{} = \frac{\frac{1}{2}\frac{\xi_w}{A_f}f\frac{G^2}{\rho_m} + \rho_mg + \frac{GV_{fg}q''\xi_h}{A_fh_{fg}}}{1 - \frac{G^2V_{fg}}{h_{fg}}\biggr[ \chi_e\pd{h_g}{P}{} + (1-\chi_e)\pd{h_f}{P}{}\biggr]}
+\end{equation}
+
+Now with our general equations, we can solve with forward first-order finite  differencing. 
+
+Approximating $\pd{A}{z}{}$ as $\frac{A^{i+1} - A^i}{\Delta z}$, we can solve for $A^{i+1}$ via simple rearranging.
+
+Thus, our finite differencing equations:
+
+\begin{subequations}
+    \begin{equation}
+        P^{i+1} = P^i - \Delta z \cdot \left[\frac{\frac{1}{2}\frac{\xi_w}{A_f}f\frac{G^2}{\rho_m} + \rho_mg + \frac{GV_{fg}q''\xi_h}{A_fh_{fg}}}{1 - \frac{G^2V_{fg}}{h_{fg}}\biggr[ \chi_e^i\pd{h_g}{P}{} + (1-\chi_e^i)\pd{h_f}{P}{}\biggr]}\right]
+    \end{equation}
+    \begin{equation}
+        \chi_e^{i+1} = \chi_e^i + \Delta z \cdot \left[\frac{q''\xi_h}{A_fGh_{fg}} - \frac{1}{h_{fg}}\biggr[ \chi_e\pd{h_g}{z}{} + (1-\chi_e^i)\pd{h_f}{z}{}\biggr]\right]
+    \end{equation}
+\end{subequations}
+
+\section{Clad Surface Temperature}
+Now, with our fluid temperature we can solve for our wall temperature. 
+Importantly, their are two regimes of heat transfer at the wall that we need to be aware of, $1\Phi$ and $2\Phi$. $1\Phi$ is simply newtons law of cooling, and thus the clad surface temp is trivial to solve for:
+\begin{equation}
+    T_{c,s} = \frac{q''}{h} + T_{fluid}
+\end{equation}
+However, in $2\Phi$ heat transfer, this hold another form:
+
+\begin{subequations}
+    \begin{equation}
+        q'' = \biggr[\bigr[ Fh_{fc}(T_{c,s} - T_{fluid}) \bigr]^2 + \bigr[ S h_{nb}(T_{c,s} - T_{sat})\bigr]^2\biggr]^{1/2}
+    \end{equation}
+    \begin{equation}
+        F = \biggr[ 1+ \chi Pr\left(\frac{\rho_f}{\rho_g} -1 \right)\biggr]^{-1}
+    \end{equation}
+    \begin{equation}
+        S = \bigr[1+ 0.055F^{0.1}Re^{0.16}\bigr]^{-1}
+    \end{equation}
+    \begin{equation}
+        h_{nb} = 55 \left(\frac{P}{P_c}\right)^{0.12}(q'')^{2/3}\left(\log\frac{P_c}{P}\right)M^{-1/2}
+    \end{equation}
+\end{subequations}
+To find $T_{c,s}$ in $2\Phi$ heat transfer, the root of q'' needs to be found. Fortunately, this equation is non-transcendental and thus has 2 roots, but these roots are not guaranteed to be real, and positive. While this equation can be solved for $T_{c,s}$ analytically, root finding methods can also be employed. The function to find the root of is:
+\begin{equation}
+    q'' - \biggr[\bigr[ Fh_{fc}(T_{c,s} - T_{fluid}) \bigr]^2 + \bigr[ S h_{nb}(T_{c,s} - T_{sat})\bigr]^2\biggr]^{1/2} = 0
+\end{equation}
+
+This is done with \texttt{scipy.optimize.root}.
+
+\section{Figures}
+
+\end{document}
+
+
