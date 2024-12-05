@@ -342,7 +342,7 @@ class Plotter:
             errormessage = f"The reactor type '{which}' is not supported. Valid reactor types are: 'BWR' or 'PWR'"
             raise Exception(errormessage)
         self.__MESH(which,show)
-        self.__BOTH(which, show)
+        self.__BOTH(show)
         if which == 'BWR':
             self.__BWR(show)
         self.__SENSITIVITY(which)
@@ -390,11 +390,10 @@ class Plotter:
             solve.solveFluid(output=False)
             ax.plot(solve.TFluidFunc(solve.z), solve.z, label = f'{n} Nodes')
         self.__finisher(ax,legend=1)
-        fig.savefig(f'{which}plots/meshrefinement.png',dpi=600)
         self.__show(show)
         return
 
-    def __BOTH(self, which, show = False):
+    def __BOTH(self, show = False):
 
         solution = self.solution
         z = solution.z
@@ -417,7 +416,6 @@ class Plotter:
         ax.plot(TFluid,z, label = 'Fluid Temperature')
         ax.plot(TSat, z, label = 'Saturation Temperature', color = 'k', linestyle = '--')
         self.__finisher(ax,legend=1)
-        fig.savefig(f'{which}plots/fluidtemp.png',dpi=600)
         self.__show(show)
 
         fig, ax = plt.subplots()
@@ -433,7 +431,6 @@ class Plotter:
         except:
             pass
         self.__finisher(ax, legend=1,loc='upper right')
-        fig.savefig(f'{which}plots/cladtemp.png',dpi=600)
         self.__show(show)
 
         fig, ax = plt.subplots()
@@ -441,14 +438,12 @@ class Plotter:
         ax.plot(TFuelCL, z, label = 'Fuel Centerline')
         ax.axhline(zmaxCL,linestyle = '--', color = 'k', label = 'Z$_{max,CL}$ at ' + f'{np.around(zmaxCL,3)} m')
         self.__finisher(ax, legend=1)
-        fig.savefig(f'{which}plots/fueltemp.png',dpi=600)
         self.__show(show)
 
         '''Pressure'''
         fig, ax = plt.subplots()
         ax.plot(Pressure, z)
         self.__finisher(ax, 'p')
-        fig.savefig(f'{which}plots/pressure.png',dpi=600)
         self.__show(show)
 
         TFuel = solution.TFuelFunc
@@ -462,7 +457,6 @@ class Plotter:
             ax.plot(Rc,TClad(Rc,z), label = 'Clad Temperature')
             ax.plot(Rf,TFuel(Rf,z), label = 'Fuel Temperature')
             self.__radfinisher(ax)
-            fig.savefig(f'{which}plots/rad-at-{z}.png',dpi=600)
             self.__show(show)
 
         
@@ -539,7 +533,6 @@ class Plotter:
         ax.set_xlabel('Density  [kg $\cdot$m$^{-3}$]')
         ax.set_ylabel('Axial Position  [m]')
         ax.grid()
-        fig.savefig('BWRplots/density.png',dpi=600)
         plt.show()
 
         '''X and Xe'''
@@ -550,7 +543,6 @@ class Plotter:
         ax.set_xlabel('Quality')
         ax.legend()
         ax.grid()
-        fig.savefig('BWRplots/quality.png',dpi=600)
         plt.show()
 
         '''Void'''
@@ -559,7 +551,6 @@ class Plotter:
         ax.set_ylabel('Axial Position  [m]')
         ax.set_xlabel('Void Fraction')
         ax.grid()
-        fig.savefig('BWRplots/void.png',dpi=600)
         plt.show()
         return
 
