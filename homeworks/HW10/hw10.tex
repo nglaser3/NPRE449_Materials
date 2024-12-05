@@ -221,4 +221,115 @@ Proximally, substituting $\chi$ into $\rho_m$, and solving for the pressure drop
         }
     \end{equation}
 \end{subequations}
+\subsection{Part A}
+substituting $q_m''$ as 0:
+\begin{equation}
+    \boxed{
+        \Delta P = \frac{fG\xi^2V_{fg}}{4A_fh_{fg}A}q_0''L^2 + 
+        \biggr( \frac{GV_{fg}\xi_h}{h_{fg}A}q_0'' + \frac{fV_fG^2\xi_w}{2A_f}\biggr)L
+        }
+\end{equation}
+
+\subsection{Part B}
+
+substituting in $q_0''$ as 0:
+\begin{equation}
+    \boxed{
+        \Delta P = \frac{fG\xi^2V_{fg}}{12A_fh_{fg}A}q_m''L^3 + \frac{GV_{fg}\xi_hq_m''}{2h_{fg}A}L^2 + 
+        \frac{fV_fG^2\xi_w}{2A_f}L
+    }
+\end{equation}
+
+\subsection{Part C}
+
+For this case, neither components drop to 0, thus:
+
+\begin{equation}
+    \boxed{
+        \Delta P = \frac{fG\xi^2V_{fg}}{12A_fh_{fg}A}q_m''L^3 + \biggr(\frac{GV_{fg}\xi_hq_m''}{2h_{fg}A} + \frac{fG\xi^2V_{fg}}{4A_fh_{fg}A}q_0''\biggr)L^2 + 
+        \biggr( \frac{GV_{fg}\xi_h}{h_{fg}A}q_0'' + \frac{fV_fG^2\xi_w}{2A_f}\biggr)L
+        }
+\end{equation}
+
+\section{Question 3}
+
+To begin, our mass and energy equations are (applying steady state, no heat gen in water):
+
+\begin{subequations}
+    \begin{equation}
+        \pd{G}{z}{} = 0
+    \end{equation}
+    \begin{equation}
+        G \pd{h}{z}{} = \frac{q''\xi_h}{A}
+    \end{equation}
+\end{subequations}
+
+where:
+\begin{subequations}
+    \begin{equation}
+        h = h_f + h_{fg}\chi_e
+    \end{equation}
+    \begin{equation}
+        \pd{h}{z}{} = h_{fg}\pd{\chi_e}{z}{}
+    \end{equation}
+\end{subequations}
+
+Thus our energy equation is simply, and solved:
+
+\begin{subequations}
+    \begin{equation}
+        \pd{\chi_e}{z}{} = \frac{q''\xi_h}{AGh_{fg}}
+    \end{equation}
+    \begin{equation}
+        \chi_e = \frac{q''\xi_h}{AGh_{fg}} z + \chi_{e,0}
+    \end{equation}
+\end{subequations}
+
+Then, the fluid temperature while sub cooled is:
+
+\begin{equation}
+    T_f = \frac{h_{fg}}{c_p}\chi_e + T_{sat}
+\end{equation}
+
+The heat transfer scheme for the code is:
+\begin{subequations}
+    \begin{equation}
+        if\ Tw\ \leq\ T_sat:\: q'' = h(T_w - T_f),\: Dittus-Boelter
+    \end{equation}
+    \begin{equation}
+        else:\: q'' =\left[ \{Fh_{fc}(T_w - T_f)v^2\} + \{ Sh_{nb}(T_w-T_{sat})\}^2\right]^{\frac{1}{2}}
+    \end{equation}
+\end{subequations}
+
+where:
+\begin{subequations}
+    \begin{equation}
+        F = \left[ 1+ \chi Pr_f (\frac{\rho_f}{\rho_g}- 1)\right]^{0.35}
+    \end{equation}
+    \begin{equation}
+        S = (1 + 0.055F^{0.1}Re_f^{0.16})^{-1}
+    \end{equation}
+    \begin{equation}
+        h_{fc} = 0.023\frac{k_f}{D_h}Re_f^{0.8}Pr_f^{0.4}
+    \end{equation}
+    \begin{equation}
+        h_{nb} = 55 (\frac{P}{P_c})^{0.12}q''^{2/3}\left(-\log{\frac{P}{P_c}}\right)^{-.55} M_w^{-0.5}
+    \end{equation}
+    \begin{equation}
+        Re_f = \frac{GD_h}{\mu_f}
+    \end{equation}
+\end{subequations}
+
+To begin, utilizing \texttt{scipy.optimize.root} to determine the locations in which the steam quality is 0 and 1 yields:
+\begin{table}[!hp!]
+    \centering
+    \begin{tabular}{c|c}
+         $\chi_e$ & Axial Position [m] \\
+         0.0 & 0.31505 \\
+         1.0 & 11.59775
+    \end{tabular}
+\end{table}
+
+And then, 
+
 \end{document}
