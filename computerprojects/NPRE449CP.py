@@ -109,7 +109,7 @@ class FluidProperties:
         self.Dh = 4 * self.Area / (self.xiw) #m
         
         '''
-        Dimensionless Groups +
+        Dimensionless Groups + UPDATE, should be changing in z
         ----------------------
         '''
         self.Re = ICs.G * self.Dh / self.mu
@@ -271,7 +271,7 @@ class Solver:
 
     def __solveCladSurface(self):
 
-        ICs,pin, fluid = self.ICs, self.pin, self.fluid
+        ICs, pin, fluid = self.ICs, self.pin, self.fluid
 
         Pc = 22.06
         M = 18.01528
@@ -286,7 +286,7 @@ class Solver:
             return pin.qpp(z) / fluid.h + self.TFluidFunc(z)
 
         T_cs = []
-        guess = fluid.tsat(ICs.P0/1e6) *1.5
+        guess = fluid.tsat(ICs.P0/1e6) * 1.5
         for i,z in enumerate(self.z):
             X_e_i = self.XeFunc(z)
             tempGuess = onephase(z)
