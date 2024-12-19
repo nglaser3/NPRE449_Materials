@@ -1,0 +1,157 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{pythonhighlight}
+\begin{document}
+content: 50\% 2phase, 25\% midterm 1, 25\% midterm 2
+
+\section{Nuclear Systems}
+\begin{enumerate}
+    \item PWR
+    \begin{itemize}
+        \item Primary System Layout (Core, RPV, Hot/Cold/ Intermediate leg, Reactor Coolant Pump, Steam Generator, Control Rods, Pressurizer)
+        \item SG: Once-through vs U-Tube
+        \item Support and safety systems
+        \begin{itemize}
+            \item CVCS: chemical and volume control system
+            \item Decay Heat Removal system
+            \item Emergency Core Cooling System
+        \end{itemize}
+        \item Basic Event Sequence of TMI
+    \end{itemize}
+    \item BWR
+    \begin{itemize}
+        \item System Components and layout (Reactor Vessel, Recirc pumps(goal and purpose), jet pumps (goal and purpose), control rods, core, driers, seperators, main steamline, turbine, condensor, feedwater pump, feedwater line)
+        \item support and safety features
+        \begin{itemize}
+            \item Water cleanup system 
+            \item decay heat removal
+            \item stand by liquid control (redundancy for CR)
+            \item ECCS HP(high pressure coolant injection, automatic depressurization system) and LP(LPCI, core spray)
+        \end{itemize}
+        \item Fukushima (basic event sequence)
+    \end{itemize}
+    \item HTGRs
+    \begin{itemize}
+        \item HTGR vs Water based systems (LWRs) (coolant, moderation, and properties). stuff like setting pressure
+        \item Prismatic vs Pebble-bed, basic components and layout
+        \item Graphite challenges, swelling, fires, wigner energy
+    \end{itemize}
+    \item Thermal Design principles
+    \begin{itemize}
+        \item limiting phenomena 
+        \item Reactor Thermal design margin
+    \end{itemize}
+    \item Reactor Heat Generation
+    \begin{itemize}
+        \item Where does heat come from (percentage break down of the jawn) and where it goes, time scale
+        \item Calculation, how to calculate q''', fission, moderation, and attenuation.
+        \item Time dependence --- decay heat
+    \end{itemize}
+    \item Nuclear System Analysis
+    \begin{itemize}
+        \item Control Volume Analysis (label variables and terms)
+        \item Thermodynamics of nuclear systems 
+        \begin{itemize}
+            \item T-S diagrams
+            \item identifying elements of conservation of mass, momentum, and energy.
+        \end{itemize}
+        \item Improvements on efficiency
+        \begin{itemize}
+            \item Tubrine inlet and outlet pressure
+            \item once through vs utube SG
+            \item multistage turbines
+        \end{itemize}
+        \item Response to Accidents
+        \begin{itemize}
+            \item loss of flow
+            \item loss of heat sink 
+            \item LOCA
+            \item secondary LOCA
+            \item reactivity insertion
+        \end{itemize}
+    \end{itemize} 
+\end{enumerate}
+
+\newpage
+\section{Heat Transfer and Single-Phase Flow}
+\begin{enumerate}
+    \item Heat Conduction
+    \begin{itemize}
+        \item Fouriers Law
+        \item Thermal Conductivity --- for nuclear materials
+        \item General Heat Diffusion Equation
+        \item Gap / Contact resistance --- Gap conductance
+    \end{itemize}
+    \item Convection 
+    \begin{itemize}
+        \item Fluids + convective HT, all single phase
+        \item dimensionless groups (Re, Pr, Nu, Pe, ...)
+        \item Fluid Conservation equations
+        \begin{itemize}
+            \item Local Instant, closure laws around it, identify terms
+            \item RANS, new closure laws, identify terms and how to get here
+            \item Area averaged, terms and variables
+        \end{itemize}
+    \end{itemize}
+    \item Convection HT (1$\Phi$)
+    \begin{itemize}
+        \item Newtons Law of Cooling
+        \item What impacts h
+        \begin{itemize}
+            \item laminar vs turb
+            \item Developing vs FD
+            \item Geometry / fluid choice (Pr)
+        \end{itemize}
+    \end{itemize}
+\end{enumerate}
+
+\newpage
+\section{Two Phase Flow and Heat Transfer}
+\begin{enumerate}
+    \item Two-Phase flow intro
+    \begin{itemize}
+        \item Basic considerations, T-S / P-T diagram, nucleation, sensible vs latent heat
+        \item General Features
+        \begin{itemize}
+            \item Heat Transfer
+            \item flow characteristics
+            \item limitations (CHF, Flow instabilities, critical flow)
+        \end{itemize}
+    \end{itemize}
+    \item Pool Boiling
+    \begin{itemize}
+        \item Boiling curve (boundaries and regions)    
+    \end{itemize}
+    \item Flow Boiling
+    \begin{itemize}
+        \item 2$\Phi$ flow structure / HT regimes (with and without DNB)
+        \item Pre-CHF HT, NB HT in flow boiling: Chen approach --- that big ugly thing
+        \item greater $\chi_e$, more evaporation better heat transfer
+    \end{itemize}
+    \item HEM
+    \begin{itemize}
+        \item Solve
+        \item impacts of inlets and material properties (class / HW 10)
+        \item X vs $\chi_e$ vs $\alpha$
+        \item how do $T_f,\ T_{sat},\ T_{wall}$ change along the channel
+    \end{itemize}
+    \item CHF
+    \begin{itemize}
+        \item High vs Low quality (X) CHF
+        \begin{itemize}
+            \item high is dryout, low is DNB
+            \item Describe what causes and what is happening (DNB is boiling so rapidly liquid cant get back to wall) (Dryout is when liquid film on wall is evaporated) both result in wall only seeing vapor not liquid
+        \end{itemize}
+        \item Conservative CHF limits
+        \item property effects
+        \begin{itemize}
+            \item G, $\Delta T_{sub}$, P, \{DNB\}
+            \item G effect on dryout \& DNB
+        \end{itemize}
+        \item DNBR, MDNBR (departure from nucleate boiling ratio, minimum)
+        \item CPR, MCPR (critical power ratio, minimum)
+    \end{itemize}
+\end{enumerate}
+\end{document}
