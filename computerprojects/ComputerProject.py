@@ -4,8 +4,6 @@ import scipy as scp
 import matplotlib.pyplot as plt
 from pyXSteam.XSteam import XSteam
 np.set_printoptions(precision=3,suppress= True)
-import warnings
-warnings.filterwarnings("ignore")
 
 class Conditions:
     
@@ -24,7 +22,7 @@ class Conditions:
             self.qp0 = 605e2 #W/cm to W/m
             self.P0 = 7.5e6 #MPa to pa
             self.Tf0c = 272 #oC
-            
+        print(self.Tf0)
         self.Tf0 = self.Tf0c + 273.15
 
 class PinProperties:
@@ -485,19 +483,18 @@ class Plotter:
             chi = chi(z)
             achi = abs(chi)
             G = self.solution.ICs.G
-            hf = (self.solution.fluid.hf(P)) *1e-3
-            hi = self.solution.fluid.hf(p0)* 1e-3
+            dh = (self.solution.fluid.hf(P) - self.solution.fluid.h(chi0,p0))*1e-3
             Dh = self.solution.fluid.Dh
 
             c1 = (2.022-0.06238*P)+(0.1722-0.01427*P)*np.exp((18.177-0.5987*P)*chi)
             c2 = (0.1484-1.596*chi+0.1729*chi*achi)*2.326*G+3271
             c3 = 1.157-0.869*chi
             c4 = 0.2664+0.8357*np.exp(-124.1*Dh)
-            c5 = 0.8258+0.0003413*(hf-hi)
+            c5 = 0.8258+0.0003413*(dh)
             return c1*c2*c3*c4*c5
         
         z = self.solution.z
-        qppcr = np.array([qcr(_) for _ in z])
+        qppcr = np.array([qcr(_) for _ in z])/1e3
         qpp = self.solution.pin.qpp(z)/1e3
         dnbr = qppcr[1:-1] / qpp[1:-1]
 
@@ -594,13 +591,12 @@ class Plotter:
         '''X and Xe'''
         fig, ax = plt.subplots()
         ax.plot(Xe, z, label = 'Equilibrium Quality')
-        ax.plot(X, z,linestyle = (5, (10, 3)), label = 'Steam Quality')
-        ax.plot(alpha, z,'--', label = 'Void Fraction')
+        ax.plot(X, z, label = 'Steam Quality')
         ax.set_ylabel('Axial Position  [m]')
         ax.set_xlabel('Quality')
         ax.legend()
         ax.grid()
-        self.__show(show,'qualities')
+        self.__show(show,'chi')
 
         '''Void'''
         fig, ax = plt.subplots()
@@ -639,7 +635,7 @@ class Plotter:
         z = self.solution.z
         qpp = self.solution.pin.qpp
         ax.plot(qpp(z),z, label = 'Operating')
-        ax.plot([qppcr(_) for _ in z], z, label = 'Critical, Dryout')
+        ax.plot([qppcr(_) for _ in z], z, label = 'Critical')
         ax.set_xlabel('Heat Flux  [$kW \cdot m^{-2}$]')
         ax.set_ylabel('Axial Position  [m]')
         ax.grid()
@@ -650,43 +646,14 @@ class Plotter:
         dnbr = np.array([qppcr(_) for _ in z])[1:-1]/qpp(z)[1:-1]
         ax.plot(dnbr,z[1:-1])
         ax.set_ylabel('Axial Position  [m]')
-        ax.set_xlabel('Dryout Ratio')
+        ax.set_xlabel('DNBR')
         ax.set_xlim(0,3.0)
         ax.grid()
         self.__show(show, 'dryoutr')
         print(f'dr: {min(dnbr)}')
 
 
-        '''CPR'''
-        def critChecker(n):
-            qp0 = 605e2
-            solver = Solver('BWR',num_zsteps=100,param='qp0',val= n*qp0)
-            solver.solveFluid(False)
-            arg = np.argmin(np.abs(solver.XeFunc(solver.z)))
-            return solver.z[arg:], solver.XeFunc, solver.PFunc
-        
-        Dh = self.solution.fluid.Dh
-        G = self.solution.ICs.G
-        def correlation(n):
-            z, Xe, P = critChecker(n)
-            a = (1 - P(z)/22) / (G/1e3)**(1/3)
-            b = 0.199 * (22 / P(z) - 1)**.4 * G * Dh**1.4
-            crit = (a * (z -z[0]) / (z-z[0] + b) )
-            return crit, z, Xe
-        
-        optimal_n = 1.17326
-        narr = np.linspace(1,optimal_n,5)
-        fig, ax = plt.subplots()
-        for n in narr:
-            crit, z, Xe = correlation(n)
-            bl = z - z[0]
-            ax.plot(bl,Xe(z), label = f'q" scaled by {n}')
-        ax.plot(bl,crit)
-        ax.legend()
-        ax.grid()
-        ax.set_xlabel('Boiling Length  [m]')
-        ax.set_ylabel('Steam Quality')
-        self.__show(show,'cpr')
+
         
         return
 
