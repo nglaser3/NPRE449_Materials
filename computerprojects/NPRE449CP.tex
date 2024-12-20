@@ -10,6 +10,7 @@
 \usepackage{amsmath}
 \usepackage{accents}
 \usepackage{empheq}
+\usepackage{multirow}
 \usepackage{pythonhighlight}
 \newcolumntype{P}[1]{>{\centering\arraybackslash}p{#1}}
 \newcolumntype{M}[1]{>{\centering\arraybackslash}m{#1}}
@@ -70,22 +71,390 @@
 
 \section{Introduction}
 
+\clearpage
 \section{Problem Statement}
 
-This report will focus on numerically solving a two-phase, sub-channel flow problem. 
+This report will focus on numerically solving a two-phase, sub-channel flow problem. Numerical solutions for both a PWR and BWR channel are presented. Prior to beginning the problem, we define some assumptions:
 
+\begin{itemize}
+    \item[\circled{1}] Steady-State
+    \item[\circled{2}] No internal heat generation in the fluid
+    \item[\circled{3}] Negligible Axial Conduction
+    \item[\circled{4}] Constant $1\Phi$ properties (evaluated at inlet temperature and pressure)
+    \item[\circled{5}] Saturation temperature, liquid enthalpy, and vapor enthalpy are all functions of pressure. All other saturation properties are assumed constant (evaluated at inlet temperature and pressure)
+    \item[\circled{6}] Changes in fuel and clad properties are negligible 
+    \item[\circled{7}] Linear power ($q'$) is of the form:
+    \begin{equation}
+        q'(z) = q'_0\sin\bigr(\frac{\pi z}{H}\bigr)
+    \end{equation}
+\end{itemize}
+
+Next, we get into our initial conditions and properties for the PWR and BWR case. These are presented below, in Table \ref{tab:ICs}.
+
+\begin{table}[!hp!]
+    \centering
+    \caption{Initial Conditions and Properties}
+    \label{tab:ICs}
+    \renewcommand{\arraystretch}{1.5}
+    \begin{tabular}{|c|c|c|c|}
+         \cline{3-4}
+         \multicolumn{2}{c|}{} & \textbf{PWR} & \textbf{BWR}\\
+         \cline{3-4}
+         \bottomrule
+         \multirow{5}{*}{\textbf{Geometry}} &Channel Height (H) [$m$] & 4 & 4.1 \\
+         &Pitch [$cm$]& 1.26 & 1.62 \\
+         &Rod Diameter [$cm$]& 0.95& 1.227\\
+         &Fuel Diameter [$cm$]& 0.82 & 1.04\\
+         &Gap Thickness [$cm$]& 0.006 & 0.010 \\
+         \toprule
+         \bottomrule
+         \multirow{3}{*}{\textbf{Thermal Conductivity}} & Gap $\bigr[\frac{W}{m^oC}\bigr]$& 0.25 & 0.25 \\
+         &Fuel $\bigr[\frac{W}{m^oC}\bigr]$& 3.6 & 3.6\\
+         &Clad $\bigr[\frac{W}{m^oC}\bigr]$& 21.5 & 21.5\\
+         \toprule
+         \bottomrule
+         \multirow{4}{*}{\textbf{Conditions}}& Mass Flux $\bigr[\frac{kg}{m^2s}\bigr]$& 4000 & 2350 \\
+         & Maximal Linear Power ($q'_0$) $\bigr[\frac{W}{cm}\bigr]$& 430 & 605 \\
+         & Inlet Pressure [$MPa$]& 15 & 7.5 \\
+         & Inlet Temperature [$^oC$]& 277 & 272 \\
+         \toprule
+         
+    \end{tabular}
+    
+\end{table}
+
+\clearpage
 \section{Methods}
+With our problem statement defined, and our initial conditions set, we can begin the solution process. This section will present the differential equations and equations being solved in Section \ref{modeling}, and the numerical method utilized to solve each in Section \ref{nummet}.
 
-\subsection{Modeling}
+\subsection{Modeling}\label{modeling}
+Prior to deriving the appropriate differential equations to this problem, the general differential equations are written. First, the area-averaged navier stokes equations are presented in Equations \ref{eq:mass} through \ref{eq:energy}. Then, the general heat diffusion equation is presented in equation \ref{eq:heat}.
+
+\begin{subequations}
+    \begin{equation}
+        \pd{\rho}{t}{} + \pd{\rho v}{z}{} = 0
+        \label{eq:mass}
+    \end{equation}
+    \begin{equation}
+        \pd{\rho v}{t}{} + \pd{}{z}{}\rho v^2 = -\pd{P}{z}{}-\tau_F\frac{\xi_w}{A_f} - \rho g \sin(\theta)
+        \label{eq:momentum}
+    \end{equation}
+    \begin{equation}
+        \pd{\rho h}{t}{} + \pd{}{z}{}\rho v h = \frac{q''\xi_h}{A}+\pd{P}{t}{} + q'''
+        \label{eq:energy}
+    \end{equation}
+\end{subequations}
+
+\begin{equation}
+    \nabla \cdot k\nabla T + q''' = -\rho c_p \pd{T}{t}{}
+    \label{eq:heat}
+\end{equation}
+
 
 \subsubsection{Fluid Flow}
+First, the fluid flow.
+
+First, assumption \circled{1} drops all time dependent terms from each equation. Next, assumption \circled{2} drops the heat generation term in Equation \ref{eq:energy}. Then, defining $G = \rho v$, and then investigating the mass equation, Equation \ref{eq:mass}, G must be constant in z. Applying both of these to the momentum and energy equations yields:
+
+\begin{subequations}
+    \begin{equation}
+        -\pd{P}{z}{} = G^2\pd{}{z}{}\frac{1}{\rho} +\tau_F\frac{\xi_w}{A_f} - \rho g \sin(\theta)
+        \label{eq:mom2}
+    \end{equation}
+    \begin{equation}
+        G\pd{h}{z}{} = \frac{q'' \xi_h}{A} 
+        \label{eq:en2}
+    \end{equation}
+\end{subequations}
+
+Now, we do not have information on $q''$, but $q'$ is known. Thus, performing a control volume analysis we can determine a relationship. All heat in/out of the pin must be equal to the heat generated, as no energy is stored:
+\begin{subequations}
+\begin{equation}
+        q'dz = q''\xi_hdz
+\end{equation}
+\begin{equation}
+        \frac{q'}{\xi_h} = q''
+\end{equation}
+\end{subequations}
+
+And thus,
+
+\begin{equation}
+    q''(z) = \frac{q'_0}{\xi_h}\sin\bigr(\frac{\pi z}{H}\bigr)
+    \label{eq:qpp}
+\end{equation}
+\newcommand{\qpp}{q'_0\sin\bigr(\frac{\pi z}{H}\bigr)}
+
+Next, $h$ is not particularly helpful to solve for, thus we convert it to $\chi_e$. $\chi_e$ is a much more helpful variable, as with this we can find two phase material properties exceedingly easy, this will be touched on next. We convert $h$ to $\chi_e$ as follows:
+\begin{subequations}
+    \begin{equation}
+        h = h_f + h_{fg}\chi_e
+    \end{equation}
+    \begin{equation}
+        \pd{h}{z}{} = h_{fg}\pd{\chi_e}{z}{}
+        \label{eq:xe2h}
+    \end{equation}
+\end{subequations}
+
+Next, to apply the HEM to the momentum equation, we simply convert $\rho$ to $\rho_m$. This new $\rho_m$ is defined as:
+
+\begin{subequations}
+    \begin{equation}
+        \rho_m = \bigr(V_f + V_{gf}\chi\bigr)^{-1}
+    \end{equation}
+    \begin{equation}
+        \pd{}{z}{}\frac{1}{\rho} = V_{gf}\pd{\chi}{z}{}
+    \end{equation}
+    \label{eq:rhom}
+\end{subequations}
+
+Lastly, $\tau_F$ is defined as:
+\begin{subequations}
+\begin{equation}
+    \tau_f = \frac{1}{2}f\frac{G^2}{\rho_m}
+    \label{eq:tauf}
+\end{equation}
+\begin{equation}
+    f = f_{1\Phi}\biggr(\frac{\mu_m}{\mu_f}\biggr)^n
+\end{equation}
+\begin{equation}
+    \mu_m = \biggr( \frac{\chi}{\mu_g} + \frac{1 - \chi}{\mu_f}\biggr)^{-1}
+\end{equation}
+\end{subequations}
+
+
+Finally, we insert Equations \ref{eq:qpp}, \ref{eq:xe2h}, \ref{eq:rhom}, and \ref{eq:tauf} into the momentum and energy equations, Equations \ref{eq:en2} and \ref{eq:mom2}, respectively. 
+
+\begin{subequations}
+    \begin{equation}
+        -\pd{P}{z}{} = G^2V_{gf}\pd{\chi}{z}{} +\tau_F\frac{\xi_w}{A_f} - \rho g \sin(\theta)
+    \end{equation}
+    \begin{equation}
+        G\biggr[\chi_e\pd{h_{fg,sat}}{z}{} + \pd{h_{f,sat}}{z}{} + h_{fg}\pd{\chi_e}{z}{} \biggr] = \frac{q'' \xi_h}{A} 
+    \end{equation}
+\end{subequations}
+
+And then simplifying and rearranging, the energy equation becomes:    \begin{equation}
+    \pd{\chi_e}{z}{} = \frac{1}{AGh_{fg}}q'(z) - \frac{1}{h_{fg}}\biggr[\chi_e\pd{h_{fg}}{z}{} + \pd{h_f}{z}{}\biggr]
+\end{equation}
+
+or alternatively: 
+\begin{equation}
+    \pd{\chi_e}{z}{} = \frac{1}{AGh_{fg}}q'(z) - \frac{1}{h_{fg}}\biggr[\chi_e\pd{h_{g}}{z}{} + (1-\chi_e)\pd{h_f}{z}{}\biggr]
+    \label{eq:energy}
+\end{equation}
+
+Then, recognizing the derivative of $\rho_m$ is dependent on the derivative $\chi_e$, we substitute this derivative into $\rho_m$ and simplify. This yields:
+\begin{equation}
+    -\pd{P}{z}{} = 
+    \frac{
+    \frac{1}{2}f\frac{\xi_wG^2}{A_f\rho_m} + \rho_m g + \frac{GV_{gf}}{Ah_{fg}}\qpp
+    }{1- \frac{G^2V_{gf}}{h_{fg}}\biggr[ \chi_e\pd{h_{g}}{z}{} + (1-\chi_e)\pd{h_f}{z}{}\biggr]}
+    \label{eq:momentum}
+\end{equation}
 
 \subsubsection{Heat Transfer}
+Next, the convective heat transfer between the fluid and the clad surface. 
+
+In this problem set-up there are two regimes of convective heat transfer: $1\Phi$ and $2\Phi$. The criteria determining which region governs the heat transfer is the clad surface temperature. If the clad surface temperature is equal to the fluid saturation temperature or greater, then the surface is experiencing $2\Phi$ heat transfer, otherwise it is $1\Phi$. 
+
+To begin, we investigate the first, $1\Phi$. This regime is the simple case, and its governing equation is:
+\begin{equation}
+    q''(z) = h\bigr[T_{s}(z) - T_{fluid}(z)\bigr]
+\end{equation}
+
+where h is found from the Dittus-Boelter correlation:
+
+\begin{equation}
+    h = \frac{Nuk}{D_h}Re^{0.8}Pr^{0.4}
+\end{equation}
+
+Next, we investigate $2\Phi$. The governing equation is the correlation:
+\begin{equation}
+    q'' = \sqrt{\bigr[ Fh_{fc}(T_s(z) - T_{fluid})\bigr]^2 + \bigr[ Sh_{nb}(T_s(z) - T_{sat}(z))\bigr]^2} 
+    \label{2phase}
+\end{equation}
+Where $h_{fc}$ is the same heat transfer coefficient as in $1\Phi$, and the other parameters are defined as:
+
+\begin{subequations}
+    \begin{equation}
+        F = \biggr[ 1 + \chi Pr\biggr(\frac{\rho_f}{\rho_g} - 1\biggr)\biggr] ^{-1}
+    \end{equation}  
+    \begin{equation}
+        S = \bigr[1 + 0.055F^{0.1}Re^{0.16}\bigr]^{-1}
+    \end{equation}
+    \begin{equation}
+        h_{nb} = 55 \biggr(\frac{P}{P_c}\biggr)^{0.12}(q'')^{2/3}\biggr(-\log\frac{P}{P_c}\biggr)M_{H_2O}^{-1/2}
+        \label{eq:hnb}
+    \end{equation}
+\end{subequations}
+
 
 \subsubsection{Fuel Pin}
+Finally, we derive the temperature distribution in the fuel pin. This pin has three regions: Fuel ($_f$), Gap ($_g$), and Clad ($_c$). Applying Assumptions \circled{1}, \circled{3}, and \circled{6}, we obtain the following simplified heat diffusion equations for each region:
+\newcommand{\laplace}{\frac{1}{r}\pd{}{r}{}r\pd{}{r}{}}
+\begin{subequations}
+\begin{equation}
+    k_f\laplace T_f(r,z) + q''' = 0
+\end{equation}
+\begin{equation}
+    k_g\laplace T_g(r,z) = 0
+\end{equation}
+\begin{equation}
+    k_c\laplace T_c(r,z) = 0
+\end{equation}
+\end{subequations}
 
-\subsection{Numerical Methods}
+First, solving the fuel temperature distribution:
+\begin{subequations}
+    \begin{equation}
+        k_f\laplace T_f(r,z) + q'''(z) = 0
+    \end{equation}
+    \begin{equation}
+        \laplace T_f(r,z) = -\frac{q'''(z)}{k_f}
+    \end{equation}
+    \begin{equation}
+        r\pd{}{r}{}T_f(r,z) = -\frac{q'''(z)r^2}{2k_f} + C_1(z)
+    \end{equation}
+    \begin{equation}
+        T_f(r,z) = -\frac{q'''(z)r^2}{4k_f} + C_1(z)\ln(r) + C_2(z)
+        \label{eq:fgen}
+    \end{equation}
+\end{subequations}
 
+Then for the gap:
+\begin{subequations}
+    \begin{equation}
+        k_g\laplace T_g(r,z) = 0
+    \end{equation}
+    \begin{equation}
+        r\pd{}{r}{}T_g(r,z) = C_3(z)
+    \end{equation}
+    \begin{equation}
+        T_g(r,z) = C_3(z)\ln(r) + C_4(z)
+        \label{eq:ggen}
+    \end{equation}
+\end{subequations}
+
+and finally, for the clad:
+\begin{subequations}
+    \begin{equation}
+        k_c\laplace T_c(r,z) = 0
+    \end{equation}
+    \begin{equation}
+        r\pd{}{r}{}T_c(r,z) = C_5(z)
+    \end{equation}
+    \begin{equation}
+        T_c(r,z) = C_5(z)\ln(r) + C_6(z)
+        \label{eq:cgen}
+    \end{equation}
+\end{subequations}
+
+\clearpage
+Next, for our boundary conditions. The boundary conditions for this problem are:
+
+\begin{itemize}
+    \item[\circled{1}] $-k_f\nabla T_f (r = 0,z) = 0$
+    \item[\circled{2}] $-k_f\nabla T_f(r=R_{f},z) = -k_g\nabla T_g(r=R_{f},z)$
+    \item[\circled{3}] $-k_g\nabla T_g(r=R_{c,i},z)=-k_c\nabla T_c(r=R_{c,i},z)$
+    \item[\circled{4}] $T_c(r= R_{c,s},z) = T_{c,s}(z)$
+    \item[\circled{5}] $T_g(r=R_{c,i},z) = T_c(r=R_{c,i},z)$
+    \item[\circled{6}] $T_f(r=R_f,z) = T_g(r=R_f,z)$
+\end{itemize}
+
+In applying all boundary conditions, once an unknown (such as $C_1$) is found, it will be kept as it initially appears and not expanded out for brevity. First, applying \circled{1} eliminates $C_1$, as the natural logarithm of 0 is non-finite, and thus the derivative cannot be 0. Next, investigating \circled{2}, inserting temperature distributions into this relation yields:
+
+\begin{subequations}
+    \begin{equation}
+        \frac{q'''(z)R_f}{2} = -\frac{k_gC_3}{R_f}
+    \end{equation}
+    \begin{equation}
+        C_3(z) = -\frac{q'''(z)R_f^2}{2k_g}
+    \end{equation}
+\end{subequations}
+
+Then, applying \circled{3}, and inserting the corresponding temperature distributions:
+
+\begin{subequations}
+    \begin{equation}
+        -\frac{k_gC_3(z)}{R_{c,i}} = -\frac{k_cC_5(z)}{R_{c,i}}
+    \end{equation}
+    \begin{equation}
+        C_5(z) = \frac{k_g}{k_c}C_3(z)
+    \end{equation}
+\end{subequations}
+
+Then, applying \circled{4}, assuming $T_{c,s}$ is a known value, found through convective heat transfer analysis at the boundary:
+\begin{subequations}
+    \begin{equation}
+        C_5(z)\ln(R_{c,s}) + C_6(z) = T_{c,s}(z)
+    \end{equation}
+    \begin{equation}
+        C_6(z) = T_{c,s}(z) - C_5(z)\ln(R_{c,s})
+    \end{equation}
+\end{subequations}
+
+Proximally applying \circled{5}:
+
+\begin{subequations}
+    \begin{equation}
+        C_3(z)\ln(R_{c,i}) + C_4(z) =  C_5(z)\ln(R_{c,i}) + C_6(z)
+    \end{equation}
+    \begin{equation}
+        C_4(z) = \ln(R_{c,i})\bigr[C_5(z) - C_3(z)\bigr] + C_6(z)
+    \end{equation}
+\end{subequations}
+
+And finally, applying the final boundary condition, \circled{6}:
+\begin{subequations}
+    \begin{equation}
+        -\frac{q'''(z)R_{f}^2}{4k_f} + C_2(z) = C_3(z)\ln(R_f) + C_4(z)
+    \end{equation}
+    \begin{equation}
+         C_2(z) = \frac{q'''(z)R_{f}^2}{4k_f} + C_3(z)\ln(R_f) + C_4(z)
+    \end{equation}
+\end{subequations}
+
+\subsection{Numerical Methods}\label{nummet}
+The numerical method utilized in solving this problem is known as 'forward' finite differencing. This scheme is utilized because the 'next' point in the simulation is only dependent on the previous' results. A simple example of this is in approximating the first derivative of a function. Forward finite differencing is defined such that the approximation to the first derivative is in the form of 'rise over run', like so:
+
+\begin{equation}
+    \pd{f(x)}{x}{} = \frac{f(x_{i+1}) - f(x_i)}{x_{i+1} - x_i}
+\end{equation}
+
+such that $i$ denotes the current node, and $i+1$ denotes the next node visited in the scheme.
+
+In this problem, the energy equation is approximated as follows:
+\begin{subequations}
+    \begin{equation}
+        \pd{\chi_e}{z}{} = \frac{\chi_e(z_{i+1}) - \chi_e(z_i)}{z_{i+1} - z_i}
+    \end{equation}
+    \begin{equation}
+        \chi_e(z_{i+1}) = \chi_e(z_{i}) + \Delta z\biggr(\frac{1}{AGh_{fg}}q'(z) - \frac{1}{h_{fg}}\biggr[\chi_e(z_i)\pd{h_{g}}{z}{} + (1-\chi_e(z_i)\pd{h_f}{z}{}\biggr]\biggr)
+    \label{eq:energy}
+    \end{equation}
+\end{subequations}
+
+And then the momentum equation:
+
+\begin{subequations}
+    \begin{equation}
+        -\pd{P}{z}{} = -\frac{P(z_{i+1}) - P(z_{i})}{z_{i+1} - z_i}
+    \end{equation}
+    \begin{equation}
+        P(z_{i+1}) = P(z_i) - \Delta z\left[ 
+        \frac{
+        \frac{1}{2}f\frac{\xi_wG^2}{A_f\rho_m} + \rho_m g + \frac{GV_{gf}}{Ah_{fg}}\qpp
+         }{1- \frac{G^2V_{gf}}{h_{fg}}\biggr[ \chi_e(z_i)\pd{h_{g}}{z}{} + (1-\chi_e(z_i))\pd{h_f}{z}{}\biggr]}
+        \right]
+    \end{equation}
+\end{subequations}
+
+Next, to determine the clad surface temperature, we utilize convective heat transfer. To do so, we assume at point $z_i$, the heat transfer is $1\Phi$. We then determine the wall temperature assuming this is the case, then check this found value against the saturation temperature of the water. If the $1\Phi$ wall temperature is less than the saturated wall temperature, then this value is stored as the wall temperature at that node, and the simulation progresses to the next node. On the other hand, if this assumed $1\Phi$ value is greater than the saturation temperature, then this node is experiencing $2\Phi$ heat transfer, and thus the $1\Phi$ value is incorrect. To determine the correct wall temperature with $2\Phi$ heat transfer, Equations \ref{2phase} through \ref{eq:hnb} are used. This equation yields a quadratic, and thus the wall temperature can be found one of two ways --- analytically or numerically. I elected to solve for the wall temperature numerically, leveraging \texttt{scipy.optimize.root} to determine the roots of the quadratic.
+
+Finally, with the clad surface temperature found, the fuel pin temperature distribution is found simply through plugging in the clad surface temperature to each coefficient that is dependent on it.
+
+\clearpage
 \section{Results and Analysis}
 
 \section{Conclusions}
