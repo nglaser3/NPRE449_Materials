@@ -7,6 +7,8 @@ np.set_printoptions(precision=3,suppress= True)
 import warnings
 warnings.filterwarnings("ignore")
 
+option = 'PWR' # options are 'PWR' or 'BWR' 
+
 class Conditions:
     
     def __init__(self,which = 'PWR'):
@@ -438,13 +440,15 @@ class Plotter:
         #ax.plot(TSat, z, label = 'Saturation Temperature', color = 'k', linestyle = '--')
         try:
             ax.axhline(solution.ONB,color = 'k', linestyle = '--',label = 'Onset of Nucleate Boiling')
+            print(f'onb: {solution.ONB}')
         except: 
             pass
         try:
             ax.axhline(solution.SatBoil,color = 'r',linestyle = '--',label = 'Saturated Boiling')
+            print(f'satboil: {solution.SatBoil}')
         except:
             pass
-        self.__finisher(ax, legend=1,loc='upper right')
+        self.__finisher(ax, legend=1,loc='upper left')
         self.__show(show,'tclad')
 
         fig, ax = plt.subplots()
@@ -475,7 +479,7 @@ class Plotter:
             ax.plot(Rf,TFuel(Rf,z), label = 'Fuel Temperature')
             self.__radfinisher(ax)
             self.__show(show, f'r-at-{z}')
-
+        print(f'zmax: {z}')
         '''DNBR'''
         def qcr(z):
             P = self.solution.PFunc
@@ -690,7 +694,7 @@ class Plotter:
         
         return
 
-
+Plotter(option,show=True)
 
 
 
